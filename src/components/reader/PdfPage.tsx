@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { TextLayer } from 'pdfjs-dist';
 import type { PDFDocumentProxy, PageViewport, RenderTask } from 'pdfjs-dist';
@@ -69,9 +69,10 @@ export function PdfPage({
   forceRender = false,
 }: PdfPageProps) {
   const root = useRef<HTMLDivElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const textLayer = useRef<HTMLDivElement>(null);
+  const canvasLayer = useRef<HTMLDivElement>(null);
+  const textLayerHost = useRef<HTMLDivElement>(null);
   const activeRenderTask = useRef<RenderTask | undefined>(undefined);
+  const committedScale = useRef(scale);
   const [nearViewport, setNearViewport] = useState(pageNumber <= 2);
   const [size, setSize] = useState({ width: 612 * scale, height: 792 * scale });
   const [viewport, setViewport] = useState<PageViewport>();
@@ -103,8 +104,28 @@ export function PdfPage({
     if (!nearViewport) setSize({ width: 612 * scale, height: 792 * scale });
   }, [nearViewport, scale]);
 
+  useLayoutEffect(() => {
+    if (!nearViewport || !viewport || Math.abs(committedScale.current - scale) < .001) return;
+    const ratio = scale / committedScale.current;
+    const nextSize = {
+      width: viewport.width * ratio,
+      height: viewport.height * ratio,
+    };
+    const rootElement = root.current;
+    if (rootElement) {
+      rootElement.style.width = `${nextSize.width}px`;
+      rootElement.style.height = `${nextSize.height}px`;
+    }
+    const visibleCanvas = canvasLayer.current?.querySelector('canvas');
+    if (visibleCanvas) {
+      visibleCanvas.style.width = `${nextSize.width}px`;
+      visibleCanvas.style.height = `${nextSize.height}px`;
+    }
+    setSize(nextSize);
+  }, [nearViewport, scale, viewport]);
+
   useEffect(() => {
-    if (!nearViewport || !canvas.current || !textLayer.current) return;
+    if (!nearViewport || !canvasLayer.current || !textLayerHost.current) return;
     let cancelled = false;
     let renderTask: RenderTask | undefined;
     let renderCompleted = false;
@@ -140,31 +161,44 @@ export function PdfPage({
             height: Math.abs(y2 - y1),
           }];
         });
-        setSize({ width: viewport.width, height: viewport.height });
-        setViewport(viewport);
-        setExternalLinks(links);
-        onViewportReady(pageNumber, viewport);
         const outputScale = Math.min(window.devicePixelRatio || 1, 2);
-        const target = canvas.current;
-        const layerElement = textLayer.current;
-        if (!target || !layerElement) return;
-        target.width = Math.floor(viewport.width * outputScale);
-        target.height = Math.floor(viewport.height * outputScale);
-        target.style.width = `${viewport.width}px`;
-        target.style.height = `${viewport.height}px`;
-        layerElement.replaceChildren();
+        const nextCanvas = window.document.createElement('canvas');
+        const nextTextLayer = window.document.createElement('div');
+        nextTextLayer.className = 'textLayer';
+        nextCanvas.width = Math.floor(viewport.width * outputScale);
+        nextCanvas.height = Math.floor(viewport.height * outputScale);
+        nextCanvas.style.width = `${viewport.width}px`;
+        nextCanvas.style.height = `${viewport.height}px`;
         renderTask = page.render({
-          canvas: target,
+          canvas: nextCanvas,
           viewport,
           transform: outputScale === 1 ? undefined : [outputScale, 0, 0, outputScale, 0, 0],
         });
         activeRenderTask.current = renderTask;
         const textContent = await page.getTextContent();
         if (cancelled) return;
-        layer = new TextLayer({ textContentSource: textContent, container: layerElement, viewport });
+        layer = new TextLayer({
+          textContentSource: textContent,
+          container: nextTextLayer,
+          viewport,
+        });
         await Promise.all([renderTask.promise, layer.render()]);
         renderCompleted = true;
-        if (!cancelled) setError('');
+        if (cancelled) return;
+        const rootElement = root.current;
+        const canvasLayerElement = canvasLayer.current;
+        const textLayerElement = textLayerHost.current;
+        if (!rootElement || !canvasLayerElement || !textLayerElement) return;
+        rootElement.style.width = `${viewport.width}px`;
+        rootElement.style.height = `${viewport.height}px`;
+        canvasLayerElement.replaceChildren(nextCanvas);
+        textLayerElement.replaceChildren(nextTextLayer);
+        committedScale.current = scale;
+        setSize({ width: viewport.width, height: viewport.height });
+        setViewport(viewport);
+        setExternalLinks(links);
+        onViewportReady(pageNumber, viewport);
+        setError('');
       } catch (reason) {
         if (!cancelled && !(reason instanceof Error && reason.name === 'RenderingCancelledException')) {
           setError(reason instanceof Error ? reason.message : 'Page rendering failed.');
@@ -204,8 +238,8 @@ export function PdfPage({
     } as CSSProperties}
   >
     {nearViewport ? <>
-      <canvas ref={canvas} />
-      <div ref={textLayer} className="textLayer" />
+      <div ref={canvasLayer} className="pdf-canvas-layer" />
+      <div ref={textLayerHost} className="pdf-text-layer-host" />
       <div className="pdf-link-layer">
         {externalLinks.map((link) => <a
           key={link.id}

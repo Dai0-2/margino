@@ -21,7 +21,7 @@
   <p>
     <a href="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml"><img src="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml/badge.svg" alt="构建状态"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-202020" alt="Apache 2.0 许可证"></a>
-    <img src="https://img.shields.io/badge/version-1.0.12-326bd1" alt="版本 1.0.12">
+    <img src="https://img.shields.io/badge/version-1.0.13-326bd1" alt="版本 1.0.13">
     <img src="https://img.shields.io/badge/Chrome-MV3-347556" alt="Chrome Manifest V3">
     <img src="https://img.shields.io/badge/storage-local--first-606460" alt="本地优先存储">
   </p>

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.13 - 2026-10-10
+
+### Fixed
+
+- Open arXiv papers from the Library through the public PDF URL so the browser
+  address bar remains on `arxiv.org` instead of an extension-internal page.
+- Render zoomed PDF pages off-screen and swap the completed canvas and text
+  layer atomically, preventing transient half-size, inverted, or stale pages
+  during rapid zoom changes.
+
 ## 1.0.11 - 2026-09-26
 
 - Replaced the Codex app-server chat path with a direct, tool-free streaming

@@ -134,4 +134,60 @@ describe('PDF external links', () => {
     expect(page.render).toHaveBeenCalledTimes(1);
     expect(page.getViewport).toHaveBeenLastCalledWith({ scale: 2 });
   });
+
+  it('atomically replaces the visible canvas when the zoom changes', async () => {
+    const renderedCanvases: HTMLCanvasElement[] = [];
+    const page = {
+      getViewport: vi.fn(({ scale }: { scale: number }) => ({
+        scale,
+        userUnit: 1,
+        width: 612 * scale,
+        height: 792 * scale,
+        convertToViewportPoint: (x: number, y: number) => [x, y],
+      } as unknown as PageViewport)),
+      getAnnotations: vi.fn(async () => []),
+      getTextContent: vi.fn(async () => ({ items: [], styles: {} })),
+      render: vi.fn(({ canvas }: { canvas: HTMLCanvasElement }) => {
+        renderedCanvases.push(canvas);
+        return {
+          promise: Promise.resolve(),
+          cancel: vi.fn(),
+        } as unknown as RenderTask;
+      }),
+    };
+    const document = {
+      getPage: vi.fn(async () => page),
+    } as unknown as PDFDocumentProxy;
+    const props = {
+      document,
+      pageNumber: 1,
+      searchQuery: '',
+      annotations: [],
+      annotationTool: 'select' as const,
+      annotationColor: '#f4cf4f',
+      language: 'en' as const,
+      onViewportReady: vi.fn(),
+      onCreateAnnotation: vi.fn(),
+      onSelectAnnotation: vi.fn(),
+      onUpdateAnnotation: vi.fn(),
+      onDeleteAnnotation: vi.fn(),
+      forceRender: true,
+    };
+
+    const { container, rerender } = render(<PdfPage {...props} scale={1} />);
+    await waitFor(() => expect(page.render).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(container.querySelector('.pdf-canvas-layer > canvas'))
+      .toBe(renderedCanvases[0]));
+
+    rerender(<PdfPage {...props} scale={1.5} />);
+    await waitFor(() => expect(page.render).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(container.querySelector('.pdf-canvas-layer > canvas'))
+      .toBe(renderedCanvases[1]));
+
+    expect(renderedCanvases[1]).not.toBe(renderedCanvases[0]);
+    expect(container.querySelector('.pdf-page')).toHaveStyle({
+      width: '918px',
+      height: '1188px',
+    });
+  });
 });

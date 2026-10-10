@@ -43,6 +43,7 @@ import {
 } from '../../repositories/libraryRepository';
 import { mergeDuplicatePapers } from '../../services/library/duplicateMerge';
 import { refreshPaperMetadata } from '../../services/library/metadata';
+import { libraryPaperLaunchTarget } from '../../services/library/openPaper';
 import type { CitationFormat } from '../../services/library/citations';
 import type { AiOrganizeProposal } from '../../services/library/aiOrganize';
 import type { PaperInfo } from '../../types';
@@ -62,12 +63,11 @@ const ImportExportDialog = lazy(async () => {
 });
 
 function readerUrl(paper: PaperInfo): string {
-  const parameters = new URLSearchParams({ paperId: paper.id });
-  if (paper.url) parameters.set('url', paper.url);
-  parameters.set('title', paper.title);
+  const target = libraryPaperLaunchTarget(paper);
+  if (target.kind === 'web') return target.url;
   return typeof chrome !== 'undefined' && chrome.runtime?.getURL
-    ? chrome.runtime.getURL(`reader.html?${parameters}`)
-    : `/reader.html?${parameters}`;
+    ? chrome.runtime.getURL(target.path)
+    : `/${target.path}`;
 }
 
 export function LibraryApp() {
