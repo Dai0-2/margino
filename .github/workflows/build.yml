@@ -55,14 +55,14 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm exec vite build --mode release
       - run: PAPERFLOW_STORE_BUILD=true pnpm audit:release
-      - run: cd dist && zip -qr ../paperflow-ai-${GITHUB_REF_NAME}.zip .
-      - run: node scripts/write-sha256.mjs "paperflow-ai-${GITHUB_REF_NAME}.zip"
+      - run: cd dist && zip -qr ../paperflow-ai-${GITHUB_REF_NAME}-chrome-web-store.zip .
+      - run: node scripts/write-sha256.mjs "paperflow-ai-${GITHUB_REF_NAME}-chrome-web-store.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: paperflow-ai-${{ github.ref_name }}
           path: |
-            paperflow-ai-${{ github.ref_name }}.zip
-            paperflow-ai-${{ github.ref_name }}.zip.sha256
+            paperflow-ai-${{ github.ref_name }}-chrome-web-store.zip
+            paperflow-ai-${{ github.ref_name }}-chrome-web-store.zip.sha256
           if-no-files-found: error
 
   native-host:
@@ -170,7 +170,7 @@ jobs:
           if-no-files-found: error
 
   release-native-host:
-    needs: native-host
+    needs: [release-extension, native-host]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -179,13 +179,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
+          name: paperflow-ai-${{ github.ref_name }}
+          path: release
+      - uses: actions/download-artifact@v4
+        with:
           pattern: paperflow-native-host-*
           path: release
           merge-multiple: true
-      - name: Publish Native Host release
+      - name: Publish PaperFlow release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          cat > "$RUNNER_TEMP/release-notes.md" <<EOF
+          PaperFlow ${GITHUB_REF_NAME} restores public arXiv PDF addresses when papers
+          are opened from the Library and atomically swaps completed PDF page renders
+          to prevent transient half-size, inverted, or stale pages during rapid zoom.
+
+          Upload \`paperflow-ai-${GITHUB_REF_NAME}-chrome-web-store.zip\` to the existing
+          Chrome Web Store item. API-only users do not need a Native Host. The Native
+          Host packages are unsigned and include SHA-256 files for verification.
+          EOF
           gh release create "$GITHUB_REF_NAME" release/* \
-            --title "PaperFlow Native Host $GITHUB_REF_NAME" \
-            --notes "Precompiled PaperFlow Native Host packages for Windows, macOS, and Linux. These packages are currently unsigned. Download only the archive for your operating system."
+            --title "PaperFlow $GITHUB_REF_NAME" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --latest
