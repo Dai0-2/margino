@@ -5,6 +5,7 @@ import {
   loginWithChatGPT,
   resetBridgeProbeForTests,
   saveApiKey,
+  sendToCodex,
 } from '../../src/services/bridge';
 
 afterEach(() => {
@@ -117,6 +118,104 @@ describe('native host protocol', () => {
 
     expect((await loginWithChatGPT()).authenticated).toBe(true);
     expect(actions).toEqual(['status', 'login']);
+  });
+
+  it('relays native messages through the background from an embedded reader', async () => {
+    const actions: string[] = [];
+    vi.stubGlobal('chrome', {
+      runtime: {
+        id: 'paperflow-test',
+        lastError: undefined,
+        sendMessage: (
+          message: { type: string; payload: { action: string } },
+          callback: (response: unknown) => void,
+        ) => {
+          expect(message.type).toBe('paperflow:native-message');
+          actions.push(message.payload.action);
+          callback(message.payload.action === 'status'
+            ? {
+                ok: true,
+                protocolVersion: 1,
+                codexAvailable: true,
+                credentialStoreAvailable: true,
+              }
+            : { ok: true, authenticated: true, detail: 'Signed in through background' });
+        },
+      },
+    });
+
+    await expect(getBridgeStatus()).resolves.toMatchObject({
+      ok: true,
+      authenticated: true,
+      detail: 'Signed in through background',
+    });
+    expect(actions).toEqual(['status', 'codex.auth_status']);
+  });
+
+  it('relays streaming Codex responses through the background', async () => {
+    const streamListeners: Array<(response: unknown) => void> = [];
+    const disconnectListeners: Array<() => void> = [];
+    const deltas: string[] = [];
+    let streamName = '';
+    let streamedAction = '';
+    vi.stubGlobal('chrome', {
+      runtime: {
+        id: 'paperflow-test',
+        lastError: undefined,
+        sendMessage: (
+          _message: { payload: { action: string } },
+          callback: (response: unknown) => void,
+        ) => callback({
+          ok: true,
+          protocolVersion: 1,
+          codexAvailable: true,
+          credentialStoreAvailable: true,
+        }),
+        connect: ({ name }: { name: string }) => {
+          streamName = name;
+          return {
+            onMessage: {
+              addListener: (listener: (response: unknown) => void) => {
+                streamListeners.push(listener);
+              },
+            },
+            onDisconnect: {
+              addListener: (listener: () => void) => {
+                disconnectListeners.push(listener);
+              },
+            },
+            postMessage: (payload: { action: string }) => {
+              streamedAction = payload.action;
+              queueMicrotask(() => {
+                for (const listener of streamListeners) {
+                  listener({ ok: true, event: 'delta', delta: 'Streamed ' });
+                  listener({ ok: true, event: 'complete', answer: 'Streamed answer' });
+                }
+              });
+            },
+            disconnect: () => {
+              for (const listener of disconnectListeners) listener();
+            },
+          };
+        },
+      },
+    });
+
+    const result = await sendToCodex(
+      'Question',
+      'Context',
+      [],
+      undefined,
+      'en',
+      (event) => {
+        if (event.delta) deltas.push(event.delta);
+      },
+    );
+
+    expect(streamName).toBe('paperflow:native-stream');
+    expect(streamedAction).toBe('codex.chat');
+    expect(deltas).toEqual(['Streamed ']);
+    expect(result).toMatchObject({ ok: true, answer: 'Streamed answer' });
   });
 
   it('starts the allow-listed Codex login action with the Rust host', async () => {

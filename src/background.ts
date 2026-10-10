@@ -12,6 +12,7 @@ import {
 } from './services/backgroundRouting';
 import { paperFromUrl } from './services/paper';
 import { registerBrowserApiHandlers } from './services/browserApi';
+import { registerNativeHostRelay } from './services/bridge';
 import { syncEngine } from './sync/SyncEngine';
 import { SYNC_SOON_ALARM } from './sync/operationLog';
 
@@ -25,6 +26,7 @@ const EMBEDDED_READER_PREFIX = 'paperflow:embedded-reader:';
 const EMBEDDED_READER_SETTLE_MS = 1_000;
 
 registerBrowserApiHandlers();
+registerNativeHostRelay();
 
 function readerUrl(
   rawUrl: string,

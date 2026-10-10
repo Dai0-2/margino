@@ -190,11 +190,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cat > "$RUNNER_TEMP/release-notes.md" <<EOF
-          PaperFlow ${GITHUB_REF_NAME} restores public arXiv PDF addresses when papers
-          are opened from the Library and atomically swaps completed PDF page renders
-          to prevent transient half-size, inverted, or stale pages during rapid zoom.
-
+          awk '
+            /^## / {
+              if (release) exit
+              release = 1
+              next
+            }
+            release { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+          cat >> "$RUNNER_TEMP/release-notes.md" <<EOF
           Upload \`paperflow-ai-${GITHUB_REF_NAME}-chrome-web-store.zip\` to the existing
           Chrome Web Store item. API-only users do not need a Native Host. The Native
           Host packages are unsigned and include SHA-256 files for verification.

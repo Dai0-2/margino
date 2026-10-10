@@ -23,6 +23,8 @@ const HOST_NAME = 'com.paperflow.ai';
 const CURRENT_PROTOCOL_VERSION = 1;
 const CODEX_AUTH_POLL_INTERVAL_MS = 1_000;
 const CODEX_AUTH_TIMEOUT_MS = 5 * 60_000;
+const NATIVE_MESSAGE_TYPE = 'paperflow:native-message';
+const NATIVE_STREAM_PORT = 'paperflow:native-stream';
 
 const bridgeResponseSchema = z.object({
   ok: z.boolean(),
@@ -84,6 +86,25 @@ export const bridgeRequestSchema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('vault.delete_device_key'), vaultId: z.string().uuid() }).strict(),
 ]);
 
+const legacyBridgeRequestSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('login') }).strict(),
+  z.object({
+    action: z.literal('chat'),
+    ...chatFields,
+  }).strict(),
+  z.object({ action: z.literal('vault.status') }).strict(),
+]);
+
+const nativeRelayPayloadSchema = z.union([
+  bridgeRequestSchema,
+  legacyBridgeRequestSchema,
+]);
+
+const nativeRelayMessageSchema = z.object({
+  type: z.literal(NATIVE_MESSAGE_TYPE),
+  payload: nativeRelayPayloadSchema,
+}).strict();
+
 type BridgeRequest = z.infer<typeof bridgeRequestSchema>;
 type LegacyRequest = Record<string, unknown>;
 type HostMode = { kind: 'rust'; status: BridgeResponse } | { kind: 'legacy'; status: BridgeResponse };
@@ -108,10 +129,7 @@ function parseResponse(response: unknown): BridgeResponse {
     : { ok: false, error: 'The PaperFlow native host returned an invalid response.' };
 }
 
-function nativeMessageUnchecked(payload: LegacyRequest): Promise<BridgeResponse> {
-  if (typeof chrome === 'undefined' || !chrome.runtime?.sendNativeMessage) {
-    return Promise.resolve({ ok: false, error: 'The local bridge is only available inside the Chrome extension.' });
-  }
+function directNativeMessage(payload: LegacyRequest): Promise<BridgeResponse> {
   return new Promise((resolve) => {
     chrome.runtime.sendNativeMessage(HOST_NAME, payload, (response: unknown) => {
       const runtimeError = chrome.runtime.lastError;
@@ -124,6 +142,41 @@ function nativeMessageUnchecked(payload: LegacyRequest): Promise<BridgeResponse>
   });
 }
 
+function relayNativeMessage(payload: LegacyRequest): Promise<BridgeResponse> {
+  const parsed = nativeRelayPayloadSchema.safeParse(payload);
+  if (!parsed.success) {
+    return Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+  }
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({
+      type: NATIVE_MESSAGE_TYPE,
+      payload: parsed.data,
+    }, (response: unknown) => {
+      const runtimeError = chrome.runtime.lastError;
+      resolve(runtimeError
+        ? { ok: false, error: nativeHostError(runtimeError.message) }
+        : parseResponse(response));
+    });
+  });
+}
+
+function nativeMessageUnchecked(payload: LegacyRequest): Promise<BridgeResponse> {
+  if (
+    typeof chrome !== 'undefined'
+    && typeof chrome.runtime?.sendNativeMessage === 'function'
+  ) {
+    return directNativeMessage(payload);
+  }
+  if (
+    typeof chrome !== 'undefined'
+    && Boolean(chrome.runtime?.id)
+    && typeof chrome.runtime?.sendMessage === 'function'
+  ) {
+    return relayNativeMessage(payload);
+  }
+  return Promise.resolve({ ok: false, error: 'The local bridge is only available inside the Chrome extension.' });
+}
+
 function nativeMessage(payload: BridgeRequest): Promise<BridgeResponse> {
   const parsed = bridgeRequestSchema.safeParse(payload);
   return parsed.success
@@ -132,19 +185,24 @@ function nativeMessage(payload: BridgeRequest): Promise<BridgeResponse> {
 }
 
 function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: BridgeResponse) => void): Promise<BridgeResponse> {
-  if (typeof chrome === 'undefined' || !chrome.runtime?.connectNative) {
+  const direct = typeof chrome !== 'undefined'
+    && typeof chrome.runtime?.connectNative === 'function';
+  const relayed = typeof chrome !== 'undefined'
+    && Boolean(chrome.runtime?.id)
+    && typeof chrome.runtime?.connect === 'function';
+  if (!direct && !relayed) {
     return Promise.resolve({ ok: false, error: 'The local bridge is only available inside the Chrome extension.' });
   }
-  let validatedPayload = payload;
-  if ('action' in payload && typeof payload.action === 'string' && payload.action.includes('.')) {
-    const parsed = bridgeRequestSchema.safeParse(payload);
-    if (!parsed.success) return Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
-    validatedPayload = parsed.data;
+  const parsed = nativeRelayPayloadSchema.safeParse(payload);
+  if (!parsed.success) {
+    return Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
   }
   return new Promise((resolve) => {
     let port: chrome.runtime.Port;
     try {
-      port = chrome.runtime.connectNative(HOST_NAME);
+      port = direct
+        ? chrome.runtime.connectNative(HOST_NAME)
+        : chrome.runtime.connect({ name: NATIVE_STREAM_PORT });
     } catch (error) {
       resolve({ ok: false, error: error instanceof Error ? error.message : 'Could not connect to the PaperFlow native host.' });
       return;
@@ -177,7 +235,67 @@ function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: 
         ? lastEvent
         : { ok: false, error: nativeHostError(chrome.runtime.lastError?.message || 'The PaperFlow native host disconnected before completing the response.') });
     });
-    port.postMessage(validatedPayload);
+    port.postMessage(parsed.data);
+  });
+}
+
+function sameExtension(senderId: string | undefined): boolean {
+  return senderId === chrome.runtime.id;
+}
+
+export function registerNativeHostRelay(): void {
+  chrome.runtime.onMessage.addListener((message: unknown, sender, sendResponse) => {
+    const parsed = nativeRelayMessageSchema.safeParse(message);
+    if (!parsed.success || !sameExtension(sender.id)) return undefined;
+    void directNativeMessage(parsed.data.payload).then(sendResponse);
+    return true;
+  });
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name !== NATIVE_STREAM_PORT || !sameExtension(port.sender?.id)) return;
+    let nativePort: chrome.runtime.Port | undefined;
+    let started = false;
+    let disconnected = false;
+    const postMessage = (message: BridgeResponse) => {
+      if (!disconnected) port.postMessage(message);
+    };
+    port.onDisconnect.addListener(() => {
+      disconnected = true;
+      nativePort?.disconnect();
+    });
+    port.onMessage.addListener((message: unknown) => {
+      if (started) return;
+      started = true;
+      const parsed = nativeRelayPayloadSchema.safeParse(message);
+      if (!parsed.success) {
+        postMessage({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+        port.disconnect();
+        return;
+      }
+      try {
+        nativePort = chrome.runtime.connectNative(HOST_NAME);
+      } catch (error) {
+        postMessage({
+          ok: false,
+          error: error instanceof Error ? error.message : 'Could not connect to the PaperFlow native host.',
+        });
+        port.disconnect();
+        return;
+      }
+      nativePort.onMessage.addListener((response: unknown) => {
+        postMessage(parseResponse(response));
+      });
+      nativePort.onDisconnect.addListener(() => {
+        postMessage({
+          ok: false,
+          error: nativeHostError(
+            chrome.runtime.lastError?.message
+            || 'The PaperFlow native host disconnected before completing the response.',
+          ),
+        });
+        port.disconnect();
+      });
+      nativePort.postMessage(parsed.data);
+    });
   });
 }
 

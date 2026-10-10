@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.14 - 2026-10-10
+
+### Fixed
+
+- Restore ChatGPT subscription and Native Host access inside the embedded
+  arXiv Reader while keeping the public `arxiv.org` address in the browser.
+- Relay allow-listed status, authentication, credential, and streaming chat
+  requests through the extension background service when embedded pages cannot
+  access Native Messaging directly.
+
 ## 1.0.13 - 2026-10-10
 
 ### Fixed
