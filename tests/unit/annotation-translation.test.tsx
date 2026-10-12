@@ -41,7 +41,48 @@ describe('translation overlay', () => {
     />);
 
     expect(screen.getByText('Translated passage')).toBeInTheDocument();
+    expect(container.querySelector('.spin')).not.toBeInTheDocument();
     expect(container.querySelector('.annotation-highlight')).not.toBeInTheDocument();
     expect(container.querySelectorAll('.annotation-hit')).toHaveLength(0);
+  });
+
+  it('shows streamed translation text while keeping the loading indicator', () => {
+    const translation: Annotation = {
+      id: 'translation:stream',
+      paperId: 'paper:test',
+      page: 1,
+      text: 'Selected passage',
+      createdAt: 1,
+      quadPoints: [{
+        points: [
+          { x: 20, y: 30 },
+          { x: 120, y: 30 },
+          { x: 120, y: 50 },
+          { x: 20, y: 50 },
+        ],
+      }],
+    };
+
+    const { container } = render(<AnnotationLayer
+      viewport={{
+        width: 612,
+        height: 792,
+        convertToPdfPoint: (x, y) => [x, y],
+        convertToViewportPoint: (x, y) => [x, y],
+      }}
+      annotations={[]}
+      translationAnnotations={[translation]}
+      tool="select"
+      color="#f4cf4f"
+      language="en"
+      translationStatus={new Map([[translation.id, '~Streaming translation']])}
+      onCreate={vi.fn()}
+      onSelect={vi.fn()}
+      onUpdate={vi.fn()}
+      onDelete={vi.fn()}
+    />);
+
+    expect(screen.getByText('Streaming translation')).toBeInTheDocument();
+    expect(container.querySelector('.spin')).toBeInTheDocument();
   });
 });

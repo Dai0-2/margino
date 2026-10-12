@@ -27,6 +27,7 @@ use crate::protocol::{Response, ResponseLanguage};
 const CODEX_RESPONSES_URL: &str = "https://chatgpt.com/backend-api/codex/responses";
 const CODEX_MODELS_URL: &str = "https://chatgpt.com/backend-api/codex/models?client_version=1.0.0";
 const CODEX_USER_AGENT: &str = "codex_cli_rs/0.0.0 (PaperFlow)";
+const TRANSLATION_CONTEXT_PREFIX: &str = "TRANSLATION SOURCE\n";
 const CODEX_TIMEOUT: Duration = Duration::from_secs(300);
 const CREDENTIAL_REFRESH_TIMEOUT: Duration = Duration::from_secs(30);
 const MAX_AUTH_FILE_BYTES: u64 = 1_048_576;
@@ -625,24 +626,38 @@ fn build_payload(
     model: &str,
     language: ResponseLanguage,
 ) -> Value {
-    let instructions = format!(
-        "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
+    let translation_source = context.strip_prefix(TRANSLATION_CONTEXT_PREFIX);
+    let instructions = if translation_source.is_some() {
+        format!(
+            "You are a precise translation engine. Translate the supplied source text into {}. \
+Preserve technical terminology, equations, citations, and paragraph structure. Return only the \
+translation without commentary, quotation marks, or Markdown fences.",
+            language.instruction()
+        )
+    } else {
+        format!(
+            "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
 paper context and be explicit when it is insufficient. Do not use tools, inspect local files, \
 run commands, or change the computer. Answer in {}. Cite factual claims from the supplied \
 paper as [Page N], and never invent page numbers. For math, use only $...$ for inline formulas \
 and $$...$$ for display formulas; never wrap formulas in plain brackets. Return only the \
 answer in Markdown.",
-        language.instruction()
-    );
-    let prompt = format!(
-        "PAPER CONTEXT\n{}\n\nUSER QUESTION\n{}",
-        if context.is_empty() {
-            "[No extracted paper text available]"
-        } else {
-            context
-        },
-        question
-    );
+            language.instruction()
+        )
+    };
+    let prompt = if let Some(source) = translation_source {
+        format!("SOURCE TEXT\n{source}\n\nTRANSLATION INSTRUCTION\n{question}")
+    } else {
+        format!(
+            "PAPER CONTEXT\n{}\n\nUSER QUESTION\n{}",
+            if context.is_empty() {
+                "[No extracted paper text available]"
+            } else {
+                context
+            },
+            question
+        )
+    };
     let mut content = vec![json!({ "type": "input_text", "text": prompt })];
     content.extend(
         images
@@ -857,6 +872,26 @@ mod tests {
         assert!(payload["instructions"]
             .as_str()
             .is_some_and(|value| value.contains("Do not use tools")));
+    }
+
+    #[test]
+    fn translation_payload_uses_compact_instructions() {
+        let payload = build_payload(
+            "Translate into Simplified Chinese.",
+            "TRANSLATION SOURCE\nTechnical source text.",
+            &[],
+            "gpt-test",
+            ResponseLanguage::Chinese,
+        );
+        assert!(payload["instructions"]
+            .as_str()
+            .is_some_and(|value| value.contains("precise translation engine")));
+        assert!(!payload["instructions"]
+            .as_str()
+            .is_some_and(|value| value.contains("[Page N]")));
+        assert!(payload["input"][0]["content"][0]["text"]
+            .as_str()
+            .is_some_and(|value| value.starts_with("SOURCE TEXT\n")));
     }
 
     #[test]

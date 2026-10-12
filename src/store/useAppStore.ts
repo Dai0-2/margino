@@ -50,6 +50,17 @@ function storedApiModels(): string[] {
   }
 }
 
+function storedCodexModels(): string[] {
+  try {
+    const value = JSON.parse(localStorage.getItem('paperflow:codex-models') || '[]') as unknown;
+    return Array.isArray(value)
+      ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim())).slice(0, 500)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 interface AppState {
   view: View; theme: Theme; fontFamily: UiFontFamily; fontScale: number; chatState: ChatState; model: string;
   initialized: boolean; detecting: boolean; paper: PaperInfo | null; paperText: string; paperChunks: PaperChunk[]; readingPaper: boolean;
@@ -99,7 +110,7 @@ export const useAppStore = create<AppState>((set) => ({
   activeThreadId: null, selection: null, defaultOpenReader: localStorage.getItem('paperflow:default-reader') !== 'false',
   bridgeState: 'checking', bridgeDetail: '', providerMode: (localStorage.getItem('paperflow:provider') as ProviderMode) || 'chatgpt', apiState: 'checking', apiDetail: '',
   uiLanguage: (localStorage.getItem('paperflow:ui-language') as Language) || 'en', promptLanguage: (localStorage.getItem('paperflow:prompt-language') as PromptLanguage) || 'auto',
-  apiBaseUrl: localStorage.getItem('paperflow:api-base-url') || 'https://api.openai.com/v1', apiProtocol: (localStorage.getItem('paperflow:api-protocol') as ApiProtocol) || 'responses', apiModels: storedApiModels(), codexModels: [],
+  apiBaseUrl: localStorage.getItem('paperflow:api-base-url') || 'https://api.openai.com/v1', apiProtocol: (localStorage.getItem('paperflow:api-protocol') as ApiProtocol) || 'responses', apiModels: storedApiModels(), codexModels: storedCodexModels(),
   messages: [], attachments: [], sending: false, draft: '',
   setView: (view) => set({ view }), setTheme: (theme) => { localStorage.setItem('paperflow:theme', theme); set({ theme }); },
   setFontFamily: (fontFamily) => {
@@ -160,6 +171,7 @@ export const useAppStore = create<AppState>((set) => ({
   },
   setCodexModels: (codexModels) => {
     const unique = [...new Set(codexModels.map((item) => item.trim()).filter(Boolean))].slice(0, 500);
+    localStorage.setItem('paperflow:codex-models', JSON.stringify(unique));
     set({ codexModels: unique });
   },
   addMessage: (message) => set((state) => ({ messages: [...state.messages, message], chatState: 'conversation' })),

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.15 - 2026-10-12
+
+### Improved
+
+- Stream translation text into the Reader overlay as tokens arrive instead of
+  waiting for the complete response.
+- Cache and refresh the default Codex model so repeated translations avoid an
+  extra model-discovery request.
+- Use compact translation-specific instructions that preserve technical terms,
+  equations, citations, and paragraph structure without requesting unrelated
+  paper analysis.
+
 ## 1.0.14 - 2026-10-10
 
 ### Fixed

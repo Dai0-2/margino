@@ -120,6 +120,38 @@ describe('browser API transport', () => {
     expect(result).toMatchObject({ ok: true, event: 'complete', answer: 'PaperFlow' });
   });
 
+  it('uses compact translation instructions for translation requests', async () => {
+    installChromeStorage({ 'paperflow:api-key': 'paperflow-test-key' });
+    let requestPayload: Record<string, unknown> = {};
+    vi.stubGlobal('fetch', vi.fn(async (_url: string, init?: RequestInit) => {
+      requestPayload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      return new Response([
+        'data: {"type":"response.output_text.delta","delta":"译文"}\n',
+        'data: [DONE]\n',
+      ].join(''), {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      });
+    }));
+
+    const result = await runBrowserApiChat({
+      type: 'paperflow:api-chat',
+      question: 'Translate into Simplified Chinese. Return only the translation.',
+      context: 'TRANSLATION SOURCE\nTechnical source text.',
+      images: [],
+      model: 'fast-model',
+      baseUrl: 'https://api.example.com/v1',
+      protocol: 'responses',
+      responseLanguage: 'zh',
+    });
+
+    expect(result).toMatchObject({ ok: true, answer: '译文' });
+    expect(requestPayload.instructions).toContain('precise translation engine');
+    expect(requestPayload.instructions).not.toContain('[Page N]');
+    expect(JSON.stringify(requestPayload.input)).toContain('SOURCE TEXT');
+    expect(JSON.stringify(requestPayload.input)).not.toContain('PAPER CONTEXT');
+  });
+
   it('rejects insecure remote endpoints before making a request', async () => {
     installChromeStorage({ 'paperflow:api-key': 'paperflow-test-key' });
     const fetchMock = vi.fn();

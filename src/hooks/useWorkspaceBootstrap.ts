@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { getApiStatus, getBridgeStatus } from '../services/bridge';
+import { discoverCodexModels, getApiStatus, getBridgeStatus } from '../services/bridge';
 import {
   loadMessages,
   loadPaperChunks,
@@ -32,13 +32,20 @@ export function useWorkspaceBootstrap({
     setPaperText,
     setPaperChunks,
     setActiveThreadId,
+    setCodexModels,
   } = useAppStore();
 
   useEffect(() => {
     setInitialized(localStorage.getItem('paperflow:initialized') === 'true');
-    void getBridgeStatus().then((result) =>
-      setBridge(result.ok && result.authenticated ? 'connected' : result.ok ? 'signed-out' : 'unavailable', result.detail || result.error || ''),
-    );
+    void getBridgeStatus().then((result) => {
+      const connected = result.ok && result.authenticated;
+      setBridge(connected ? 'connected' : result.ok ? 'signed-out' : 'unavailable', result.detail || result.error || '');
+      if (connected) {
+        void discoverCodexModels().then((models) => {
+          if (models.ok && models.models?.length) setCodexModels(models.models);
+        });
+      }
+    });
     void getApiStatus().then((result) =>
       setApiState(result.ok && result.authenticated ? 'connected' : result.ok ? 'signed-out' : 'unavailable', result.detail || result.error || ''),
     );
@@ -47,7 +54,7 @@ export function useWorkspaceBootstrap({
     } else {
       setDetecting(false);
     }
-  }, [detectPaper, setApiState, setBridge, setDetecting, setInitialized, setPaper]);
+  }, [detectPaper, setApiState, setBridge, setCodexModels, setDetecting, setInitialized, setPaper]);
 
   useEffect(() => {
     if (!detectPaper || typeof chrome === 'undefined' || !chrome.tabs) return;

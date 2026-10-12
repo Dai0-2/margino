@@ -5,15 +5,15 @@
 ## 当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.14`
+- 版本：`1.0.15`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.14-chrome-web-store.zip`。提交审核前确认：
+正式上传包为 `paperflow-ai-v1.0.15-chrome-web-store.zip`。提交审核前确认：
 
 1. 发布者联系邮箱已验证，隐私权政策网址可以公开访问。
 2. 使用上述商品 ID 创建“Chrome 扩展程序”类型的 Google OAuth 客户端。
-3. 上传 `paperflow-ai-v1.0.14-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
+3. 上传 `paperflow-ai-v1.0.15-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
    使用其他已注册扩展 ID 时才设置 `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
 4. 完成真实 Google Drive 同步验证和核心 Reader 流程测试。
 
@@ -218,7 +218,7 @@ Native Host 下载包已提供 SHA-256，目前未签名，Windows/macOS 可能�
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端类型为 Chrome 扩展程序，并使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 权限范围只有 `drive.file`。
-- [ ] 最终上传包是 `paperflow-ai-v1.0.14-chrome-web-store.zip`，不是源码或
+- [ ] 最终上传包是 `paperflow-ai-v1.0.15-chrome-web-store.zip`，不是源码或
   Native Host 压缩包。
 - [ ] 隐私政策网址公开、稳定且可以直接访问。
 - [ ] 商店截图中不存在凭据或私人数据。

@@ -213,12 +213,23 @@ export function ReaderApp() {
 
     setTranslationStatus(new Map([[
       annotation.id,
-      text(uiLanguage, 'Translating…', '正在翻译…'),
+      `~${text(uiLanguage, 'Translating…', '正在翻译…')}`,
     ]]));
     let streamed = '';
+    let streamTimer: number | undefined;
+    const flushStream = () => {
+      streamTimer = undefined;
+      if (!streamed) return;
+      setTranslationStatus((status) => new Map(status).set(annotation.id, `~${streamed}`));
+    };
+    const onEvent = (event: { event?: string; delta?: string }) => {
+      if (event.event !== 'delta' || !event.delta) return;
+      streamed += event.delta;
+      if (streamTimer === undefined) streamTimer = window.setTimeout(flushStream, 32);
+    };
     const targetLanguage = uiLanguage === 'zh' ? 'Simplified Chinese' : 'English';
-    const question = `Translate the selected passage into ${targetLanguage}. Return only the translation, without commentary or quotation marks.`;
-    const context = `SELECTED PASSAGE\n${annotation.text}`;
+    const question = `Translate into ${targetLanguage}. Preserve terminology, equations, citations, and paragraph structure. Return only the translation.`;
+    const context = `TRANSLATION SOURCE\n${annotation.text}`;
     try {
       const result = current.providerMode === 'api'
         ? await sendToOpenAI(
@@ -229,20 +240,22 @@ export function ReaderApp() {
           current.apiBaseUrl,
           current.apiProtocol,
           uiLanguage,
-          (event) => {
-            if (event.event === 'delta' && event.delta) streamed += event.delta;
-          },
+          onEvent,
         )
         : await sendToCodex(
             question,
             context,
             [],
-            current.model === 'ChatGPT via Codex' ? undefined : current.model,
+            current.model === 'ChatGPT via Codex'
+              ? current.codexModels[0]
+              : current.model,
             uiLanguage,
-            (event) => {
-              if (event.event === 'delta' && event.delta) streamed += event.delta;
-            },
+            onEvent,
           );
+      if (streamTimer !== undefined) {
+        window.clearTimeout(streamTimer);
+        streamTimer = undefined;
+      }
       const translation = (result.answer || streamed).trim();
       if (!result.ok || !translation) {
         throw new Error(result.error || text(uiLanguage, 'Translation failed.', '翻译失败。'));
@@ -253,6 +266,8 @@ export function ReaderApp() {
         annotation.id,
         `!${reason instanceof Error ? reason.message : text(uiLanguage, 'Translation failed.', '翻译失败。')}`,
       ));
+    } finally {
+      if (streamTimer !== undefined) window.clearTimeout(streamTimer);
     }
   };
 

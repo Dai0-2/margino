@@ -17,6 +17,7 @@ use crate::{
 
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(300);
 const POOL_IDLE_TIMEOUT: Duration = Duration::from_secs(90);
+const TRANSLATION_CONTEXT_PREFIX: &str = "TRANSLATION SOURCE\n";
 static API_CLIENT: OnceLock<Client> = OnceLock::new();
 
 pub struct ChatRequest<'a> {
@@ -139,22 +140,36 @@ fn build_payload(
     protocol: ApiProtocol,
     language: ResponseLanguage,
 ) -> Value {
-    let prompt = format!(
-        "PAPER CONTEXT\n{}\n\nUSER QUESTION\n{}",
-        if context.is_empty() {
-            "[No extracted paper text available]"
-        } else {
-            context
-        },
-        question
-    );
-    let instructions = format!(
-        "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
+    let translation_source = context.strip_prefix(TRANSLATION_CONTEXT_PREFIX);
+    let prompt = if let Some(source) = translation_source {
+        format!("SOURCE TEXT\n{source}\n\nTRANSLATION INSTRUCTION\n{question}")
+    } else {
+        format!(
+            "PAPER CONTEXT\n{}\n\nUSER QUESTION\n{}",
+            if context.is_empty() {
+                "[No extracted paper text available]"
+            } else {
+                context
+            },
+            question
+        )
+    };
+    let instructions = if translation_source.is_some() {
+        format!(
+            "You are a precise translation engine. Translate the supplied source text into {}. \
+Preserve technical terminology, equations, citations, and paragraph structure. Return only the \
+translation without commentary, quotation marks, or Markdown fences.",
+            language.instruction()
+        )
+    } else {
+        format!(
+            "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
 context, say when it is insufficient, answer in {}, and use Markdown. Cite factual claims \
 from the supplied paper as [Page N]. Never invent page numbers. For math, use only $...$ \
 for inline formulas and $$...$$ for display formulas; never wrap formulas in plain brackets.",
-        language.instruction()
-    );
+            language.instruction()
+        )
+    };
     match protocol {
         ApiProtocol::Responses => {
             let mut content = vec![json!({ "type": "input_text", "text": prompt })];
@@ -326,5 +341,26 @@ mod tests {
         assert!(payload["instructions"]
             .as_str()
             .is_some_and(|value| value.contains("$$...$$")));
+    }
+
+    #[test]
+    fn translation_payload_uses_compact_instructions() {
+        let payload = build_payload(
+            "Translate into Simplified Chinese.",
+            "TRANSLATION SOURCE\nTechnical source text.",
+            &[],
+            "model",
+            ApiProtocol::Responses,
+            ResponseLanguage::Chinese,
+        );
+        assert!(payload["instructions"]
+            .as_str()
+            .is_some_and(|value| value.contains("precise translation engine")));
+        assert!(!payload["instructions"]
+            .as_str()
+            .is_some_and(|value| value.contains("[Page N]")));
+        assert!(payload["input"][0]["content"][0]["text"]
+            .as_str()
+            .is_some_and(|value| value.starts_with("SOURCE TEXT\n")));
     }
 }

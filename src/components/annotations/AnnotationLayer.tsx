@@ -309,10 +309,9 @@ export function AnnotationLayer({
       const translation = annotation.translation || translationStatus?.get(annotation.id);
       const position = translationPosition(annotation, viewport);
       if (!translation || !position) return null;
-      const loading = translationStatus?.has(annotation.id)
-        && !annotation.translation
-        && !translation.startsWith('!');
-      const content = translation.startsWith('!') ? translation.slice(1) : translation;
+      const loading = translation.startsWith('~');
+      const marked = loading || translation.startsWith('!');
+      const content = marked ? translation.slice(1) : translation;
       return <button
         key={`translation-${annotation.id}`}
         className="annotation-translation"

@@ -1,6 +1,7 @@
 import type { ApiProtocol, BridgeResponse } from '../types';
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
+const TRANSLATION_CONTEXT_PREFIX = 'TRANSLATION SOURCE\n';
 
 function validatedUrl(rawUrl: string): URL {
   if (!rawUrl.trim() || rawUrl.length > 2_048) {
@@ -51,7 +52,10 @@ export function normalizeModelsEndpoint(baseUrl: string): string {
   return url.toString();
 }
 
-function instructions(language: string): string {
+function instructions(language: string, translation: boolean): string {
+  if (translation) {
+    return `You are a precise translation engine. Translate the supplied source text into ${language === 'zh' ? 'Simplified Chinese' : 'English'}. Preserve technical terminology, equations, citations, and paragraph structure. Return only the translation without commentary, quotation marks, or Markdown fences.`;
+  }
   return `You are PaperFlow, a precise research-paper reading assistant. Use only the supplied context, say when it is insufficient, answer in ${language === 'zh' ? 'Chinese' : 'English'}, and use Markdown. Cite factual claims from the supplied paper as [Page N]. Never invent page numbers. For math, use only $...$ for inline formulas and $$...$$ for display formulas; never wrap formulas in plain brackets.`;
 }
 
@@ -64,11 +68,14 @@ export function buildApiRequestPayload(
   language: string,
   stream: boolean,
 ): Record<string, unknown> {
-  const prompt = `PAPER CONTEXT\n${context || '[No extracted paper text available]'}\n\nUSER QUESTION\n${question}`;
+  const translation = context.startsWith(TRANSLATION_CONTEXT_PREFIX);
+  const prompt = translation
+    ? `SOURCE TEXT\n${context.slice(TRANSLATION_CONTEXT_PREFIX.length)}\n\nTRANSLATION INSTRUCTION\n${question}`
+    : `PAPER CONTEXT\n${context || '[No extracted paper text available]'}\n\nUSER QUESTION\n${question}`;
   if (protocol === 'responses') {
     return {
       model,
-      instructions: instructions(language),
+      instructions: instructions(language, translation),
       input: [{
         role: 'user',
         content: [
@@ -84,7 +91,7 @@ export function buildApiRequestPayload(
   return {
     model,
     messages: [
-      { role: 'system', content: instructions(language) },
+      { role: 'system', content: instructions(language, translation) },
       {
         role: 'user',
         content: [
