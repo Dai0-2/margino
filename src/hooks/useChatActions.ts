@@ -17,6 +17,7 @@ export function useChatActions() {
     if (!question.trim() || current.sending) return;
     const ready = current.providerMode === 'api' ? current.apiState === 'connected' : current.bridgeState === 'connected';
     if (!ready) { current.setInitialized(false); return; }
+    const quotedReply = replaceAssistantId ? null : current.quotedReply;
     const assistantId = replaceAssistantId || crypto.randomUUID();
     if (replaceAssistantId) current.updateMessage(assistantId, {
       content: current.uiLanguage === 'zh' ? '正在重新生成…' : 'Regenerating…',
@@ -29,7 +30,16 @@ export function useChatActions() {
       feedbackDetail: undefined,
     });
     else {
-      current.addMessage({ id: crypto.randomUUID(), paperId: current.paper?.id, threadId: current.activeThreadId || undefined, role: 'user', content: question.trim(), createdAt: Date.now() });
+      current.addMessage({
+        id: crypto.randomUUID(),
+        paperId: current.paper?.id,
+        threadId: current.activeThreadId || undefined,
+        role: 'user',
+        content: question.trim(),
+        quotedMessageId: quotedReply?.messageId,
+        quotedText: quotedReply?.text,
+        createdAt: Date.now(),
+      });
       current.addMessage({
         id: assistantId,
         paperId: current.paper?.id,
@@ -41,7 +51,9 @@ export function useChatActions() {
         pending: true,
       });
     }
-    current.setDraft(''); current.setSending(true);
+    current.setDraft('');
+    if (quotedReply) current.setQuotedReply(null);
+    current.setSending(true);
     const startedAt = performance.now();
     let firstTokenMs: number | undefined;
     let streamTimer: ReturnType<typeof setTimeout> | undefined;
@@ -97,7 +109,15 @@ export function useChatActions() {
         selection: current.selection,
         question,
       });
-      const context = `${paperContext}\n\n${attachmentContext}\n\nRECENT CONVERSATION\n${history}`;
+      const quotedContext = quotedReply
+        ? `SELECTED ASSISTANT ANSWER\n${quotedReply.text}`
+        : '';
+      const context = [
+        paperContext,
+        attachmentContext,
+        quotedContext,
+        `RECENT CONVERSATION\n${history}`,
+      ].filter(Boolean).join('\n\n');
       const responseLanguage = current.promptLanguage === 'auto' ? current.uiLanguage : current.promptLanguage;
       const onEvent = (event: { event?: string; stage?: string; delta?: string }) => {
         if (event.event === 'delta' && event.delta) {

@@ -1,5 +1,5 @@
-import { Bookmark, Check, Copy, Pencil, RefreshCw, Tag, ThumbsDown, ThumbsUp, X } from 'lucide-react';
-import { useState } from 'react';
+import { Bookmark, Check, Copy, MessageSquareQuote, Pencil, RefreshCw, Tag, ThumbsDown, ThumbsUp, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
@@ -14,6 +14,7 @@ import { normalizeMathDelimiters } from '../../services/markdown';
 
 const tagOptions = { en: ['Key finding', 'Method', 'Limitation', 'Question'], zh: ['关键发现', '研究方法', '局限性', '待确认'] };
 const feedbackOptions = { en: ['Incorrect', 'Unclear', 'Missing context', 'Too verbose'], zh: ['内容不正确', '表述不清', '缺少上下文', '过于冗长'] };
+interface AnswerSelection { messageId: string; text: string; left: number; top: number }
 
 function noteTitle(content: string, language: 'en' | 'zh'): string {
   const firstLine = content
@@ -26,12 +27,58 @@ function noteTitle(content: string, language: 'en' | 'zh'): string {
 }
 
 export function Conversation() {
-  const { messages, paper, uiLanguage, sending, updateMessage, setDraft, setMessages, setPaper } = useAppStore();
+  const { messages, paper, uiLanguage, sending, updateMessage, setDraft, setMessages, setPaper, setQuotedReply } = useAppStore();
   const { submit } = useChatActions();
   const [tagging, setTagging] = useState<string | null>(null);
   const [feedbackFor, setFeedbackFor] = useState<string | null>(null);
   const [savingNote, setSavingNote] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<{ id: string; message: string } | null>(null);
+  const [answerSelection, setAnswerSelection] = useState<AnswerSelection | null>(null);
+  useEffect(() => {
+    const dismiss = () => setAnswerSelection(null);
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') dismiss();
+    };
+    document.addEventListener('scroll', dismiss, true);
+    window.addEventListener('resize', dismiss);
+    window.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('scroll', dismiss, true);
+      window.removeEventListener('resize', dismiss);
+      window.removeEventListener('keydown', escape);
+    };
+  }, []);
+  const captureAnswerSelection = (messageId: string, body: HTMLElement, clientX = 0, clientY = 0) => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || selection.rangeCount === 0 || !selection.anchorNode || !selection.focusNode
+      || !body.contains(selection.anchorNode) || !body.contains(selection.focusNode)) {
+      setAnswerSelection(null);
+      return;
+    }
+    const selectedText = selection.toString().replace(/\s+/g, ' ').trim().slice(0, 4_000);
+    if (!selectedText) {
+      setAnswerSelection(null);
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const rect = typeof range.getBoundingClientRect === 'function' ? range.getBoundingClientRect() : null;
+    const center = rect && rect.width ? rect.left + rect.width / 2 : clientX;
+    const below = rect && rect.height ? rect.bottom + 8 : clientY + 8;
+    const above = rect && rect.height ? rect.top - 38 : clientY - 38;
+    setAnswerSelection({
+      messageId,
+      text: selectedText,
+      left: Math.min(Math.max(center, 54), window.innerWidth - 54),
+      top: below <= window.innerHeight - 40 ? below : Math.max(8, above),
+    });
+  };
+  const quoteAnswerSelection = () => {
+    if (!answerSelection) return;
+    setQuotedReply({ messageId: answerSelection.messageId, text: answerSelection.text });
+    window.getSelection()?.removeAllRanges();
+    setAnswerSelection(null);
+    requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('paperflow:focus-composer')));
+  };
   const regenerate = (index: number, id: string) => {
     const question = [...messages.slice(0, index)].reverse().find((item) => item.role === 'user')?.content;
     if (question) void submit(question, id);
@@ -82,7 +129,17 @@ export function Conversation() {
         )}</span>}
       </div>}
       {message.progress && <div className="message-progress"><span />{message.progress}</div>}
-      <div className="message-body"><ReactMarkdown
+      <div
+        className="message-body"
+        onPointerUp={message.role === 'assistant' && !message.pending
+          ? (event) => captureAnswerSelection(message.id, event.currentTarget, event.clientX, event.clientY)
+          : undefined}
+      >
+        {message.role === 'user' && message.quotedText && <div className="message-quote">
+          <MessageSquareQuote size={13} />
+          <span>{message.quotedText}</span>
+        </div>}
+        <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, {
           output: 'htmlAndMathml',
@@ -90,7 +147,8 @@ export function Conversation() {
           throwOnError: false,
           trust: false,
         }]]}
-      >{normalizeMathDelimiters(message.content)}</ReactMarkdown></div>
+      >{normalizeMathDelimiters(message.content)}</ReactMarkdown>
+      </div>
       {(message.citations?.length || message.citation) && <div className="citations">{(message.citations || (message.citation ? [message.citation] : [])).map((citation) => <Citation key={`${message.id}-${citation.page}-${citation.label}`} citation={citation} />)}</div>}
       {!!message.tags?.length && <div className="message-tags">{message.tags.map((tag) => <button key={tag} onClick={() => toggleTag(message.id, tag, message.tags)}>{tag}<X size={10} /></button>)}</div>}
       {!message.pending && <div className="message-actions" aria-label={text(uiLanguage, 'Message actions', '消息操作')}>
@@ -102,5 +160,15 @@ export function Conversation() {
       {tagging === message.id && <div className="message-panel"><strong>{text(uiLanguage, 'Tags', '标签')}</strong><div>{tagOptions[uiLanguage].map((tag) => <button data-active={message.tags?.includes(tag)} key={tag} onClick={() => toggleTag(message.id, tag, message.tags)}>{tag}</button>)}</div></div>}
       {feedbackFor === message.id && <div className="message-panel feedback-panel"><strong>{text(uiLanguage, 'What could be improved?', '哪里需要改进？')}</strong><div>{feedbackOptions[uiLanguage].map((reason) => <button data-active={message.feedbackDetail === reason} key={reason} onClick={() => { updateMessage(message.id, { feedback: 'down', feedbackDetail: reason }); setFeedbackFor(null); }}>{reason}</button>)}</div><button className="dismiss-feedback" onClick={() => setFeedbackFor(null)}>{text(uiLanguage, 'Dismiss', '关闭')}</button></div>}
     </article>)}
+    {answerSelection && <button
+      className="answer-selection-action"
+      style={{ left: answerSelection.left, top: answerSelection.top }}
+      aria-label={text(uiLanguage, 'Ask about selected answer', '针对选中内容提问')}
+      onPointerDown={(event) => event.preventDefault()}
+      onClick={quoteAnswerSelection}
+    >
+      <MessageSquareQuote size={14} />
+      {text(uiLanguage, 'Ask', '提问')}
+    </button>}
   </div>;
 }

@@ -155,6 +155,8 @@ export async function saveMessages(paperId: string, threadId: string, messages: 
       const unchanged = current
         && !current.deletedAt
         && current.content === message.content
+        && current.quotedMessageId === message.quotedMessageId
+        && current.quotedText === message.quotedText
         && current.sequence === sequence
         && current.feedback === message.feedback
         && current.saved === message.saved

@@ -11,6 +11,7 @@ import type {
   PaperSelection,
   PromptLanguage,
   ProviderMode,
+  ReplyQuote,
   Theme,
   UiFontFamily,
   View,
@@ -64,7 +65,7 @@ function storedCodexModels(): string[] {
 interface AppState {
   view: View; theme: Theme; fontFamily: UiFontFamily; fontScale: number; chatState: ChatState; model: string;
   initialized: boolean; detecting: boolean; paper: PaperInfo | null; paperText: string; paperChunks: PaperChunk[]; readingPaper: boolean;
-  activeThreadId: string | null; selection: PaperSelection | null; defaultOpenReader: boolean;
+  activeThreadId: string | null; selection: PaperSelection | null; quotedReply: ReplyQuote | null; defaultOpenReader: boolean;
   bridgeState: BridgeState; bridgeDetail: string;
   providerMode: ProviderMode; apiState: BridgeState; apiDetail: string;
   uiLanguage: Language; promptLanguage: PromptLanguage; apiBaseUrl: string; apiProtocol: ApiProtocol; apiModels: string[]; codexModels: string[];
@@ -84,6 +85,7 @@ interface AppState {
   setReadingPaper: (readingPaper: boolean) => void;
   setActiveThreadId: (threadId: string | null) => void;
   setSelection: (selection: PaperSelection | null) => void;
+  setQuotedReply: (quotedReply: ReplyQuote | null) => void;
   setDefaultOpenReader: (enabled: boolean) => void;
   setBridge: (state: BridgeState, detail?: string) => void;
   setProviderMode: (providerMode: ProviderMode) => void;
@@ -107,7 +109,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set) => ({
   view: 'chat', theme: storedTheme(), fontFamily: storedFontFamily(), fontScale: storedFontScale(), chatState: 'empty', model: localStorage.getItem('paperflow:provider') === 'api' ? (localStorage.getItem('paperflow:api-model') || 'gpt-4.1-mini') : (localStorage.getItem('paperflow:codex-model') || 'ChatGPT via Codex'),
   initialized: false, detecting: true, paper: null, paperText: '', paperChunks: [], readingPaper: false,
-  activeThreadId: null, selection: null, defaultOpenReader: localStorage.getItem('paperflow:default-reader') !== 'false',
+  activeThreadId: null, selection: null, quotedReply: null, defaultOpenReader: localStorage.getItem('paperflow:default-reader') !== 'false',
   bridgeState: 'checking', bridgeDetail: '', providerMode: (localStorage.getItem('paperflow:provider') as ProviderMode) || 'chatgpt', apiState: 'checking', apiDetail: '',
   uiLanguage: (localStorage.getItem('paperflow:ui-language') as Language) || 'en', promptLanguage: (localStorage.getItem('paperflow:prompt-language') as PromptLanguage) || 'auto',
   apiBaseUrl: localStorage.getItem('paperflow:api-base-url') || 'https://api.openai.com/v1', apiProtocol: (localStorage.getItem('paperflow:api-protocol') as ApiProtocol) || 'responses', apiModels: storedApiModels(), codexModels: storedCodexModels(),
@@ -135,6 +137,7 @@ export const useAppStore = create<AppState>((set) => ({
   setPaperText: (paperText) => set({ paperText }), setPaperChunks: (paperChunks) => set({ paperChunks }), setReadingPaper: (readingPaper) => set({ readingPaper }),
   setActiveThreadId: (activeThreadId) => set({ activeThreadId }),
   setSelection: (selection) => set({ selection }),
+  setQuotedReply: (quotedReply) => set({ quotedReply }),
   setDefaultOpenReader: (defaultOpenReader) => {
     localStorage.setItem('paperflow:default-reader', String(defaultOpenReader));
     if (typeof chrome !== 'undefined' && chrome.storage?.local) void chrome.storage.local.set({ defaultOpenReader });
@@ -175,9 +178,15 @@ export const useAppStore = create<AppState>((set) => ({
     set({ codexModels: unique });
   },
   addMessage: (message) => set((state) => ({ messages: [...state.messages, message], chatState: 'conversation' })),
-  setMessages: (messages) => set({ messages, chatState: messages.length ? 'conversation' : 'empty' }),
+  setMessages: (messages) => set((state) => ({
+    messages,
+    chatState: messages.length ? 'conversation' : 'empty',
+    quotedReply: state.quotedReply && messages.some((message) => message.id === state.quotedReply?.messageId)
+      ? state.quotedReply
+      : null,
+  })),
   updateMessage: (id, patch) => set((state) => ({ messages: state.messages.map((message) => message.id === id ? { ...message, ...patch } : message) })),
-  clearMessages: () => set({ messages: [], chatState: 'empty' }),
+  clearMessages: () => set({ messages: [], quotedReply: null, chatState: 'empty' }),
   addAttachment: (attachment) => set((state) => ({ attachments: [...state.attachments, attachment] })),
   removeAttachment: (id) => set((state) => ({ attachments: state.attachments.filter((attachment) => attachment.id !== id) })),
   setSending: (sending) => set({ sending }),

@@ -32,6 +32,8 @@ export interface Message {
   threadId?: string;
   role: 'user' | 'assistant';
   content: string;
+  quotedMessageId?: string;
+  quotedText?: string;
   model?: string;
   firstTokenMs?: number;
   durationMs?: number;
@@ -49,6 +51,11 @@ export interface Message {
   updatedAt?: number;
   version?: EntityVersion;
   deletedAt?: number;
+}
+
+export interface ReplyQuote {
+  messageId: string;
+  text: string;
 }
 
 export interface Thread {

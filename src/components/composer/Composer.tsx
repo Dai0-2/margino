@@ -1,4 +1,4 @@
-import { ArrowUp, ChevronDown, FileText, Image, LoaderCircle, Plus, Quote, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, FileText, Image, LoaderCircle, MessageSquareQuote, Plus, Quote, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { promptPresets } from '../../data/promptPresets';
@@ -10,7 +10,7 @@ import { text } from '../../i18n';
 export function Composer() {
   const [modelsOpen, setModelsOpen] = useState(false); const [attachmentsOpen, setAttachmentsOpen] = useState(false); const [fileError, setFileError] = useState(''); const [readingFile, setReadingFile] = useState(false);
   const zone = useRef<HTMLDivElement>(null); const textarea = useRef<HTMLTextAreaElement>(null); const documentInput = useRef<HTMLInputElement>(null); const imageInput = useRef<HTMLInputElement>(null);
-  const { model, providerMode, uiLanguage, promptLanguage, draft, paper, selection, bridgeState, apiState, attachments, sending, setDraft, setSelection, addAttachment, removeAttachment } = useAppStore();
+  const { model, providerMode, uiLanguage, promptLanguage, draft, paper, selection, quotedReply, bridgeState, apiState, attachments, sending, setDraft, setSelection, setQuotedReply, addAttachment, removeAttachment } = useAppStore();
   const { submit } = useChatActions();
   const value = draft;
   useEffect(() => { if (!textarea.current) return; textarea.current.style.height = '0'; textarea.current.style.height = `${Math.min(textarea.current.scrollHeight, 128)}px`; }, [value]);
@@ -54,6 +54,7 @@ export function Composer() {
     <div className="prompt-presets" aria-label={text(uiLanguage, 'Prompt shortcuts', '快捷提示词')}>
       {promptPresets.map((preset) => <button key={preset.id} onClick={() => applyPreset(preset.prompt[promptLanguage === 'auto' ? uiLanguage : promptLanguage])}>{preset.label[uiLanguage]}</button>)}
     </div>
+    {quotedReply && <div className="selection-preview selected-text-preview reply-quote-preview"><MessageSquareQuote size={15} /><div><span>{text(uiLanguage, 'Quoted answer', '引用回答')}</span><p>{quotedReply.text}</p></div><button aria-label={text(uiLanguage, 'Remove quoted answer', '移除引用回答')} onClick={() => setQuotedReply(null)}><X size={14} /></button></div>}
     {selection && <div className="selection-preview selected-text-preview"><Quote size={15} /><div><span>{text(uiLanguage, `Selected text · Page ${selection.page}`, `选中文字 · 第 ${selection.page} 页`)}</span><p>{selection.text}</p></div><button aria-label={text(uiLanguage, 'Remove selected text', '移除选中文字')} onClick={() => setSelection(null)}><X size={14} /></button></div>}
     {attachments.map((attachment) => <div className="selection-preview" key={attachment.id}>{attachment.kind === 'image' && attachment.dataUrl ? <img src={attachment.dataUrl} alt="" /> : <FileText size={15} />}<div><span>{attachment.kind === 'pdf' ? `PDF${attachment.pageCount ? ` · ${attachment.pageCount} pages` : ''}` : attachment.kind === 'image' ? 'Image' : 'Text file'}</span><p>{attachment.name}</p></div><button aria-label={`Remove ${attachment.name}`} onClick={() => removeAttachment(attachment.id)}><X size={14} /></button></div>)}
     {fileError && <div className="composer-error">{fileError}</div>}

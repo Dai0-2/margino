@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.16 - 2026-10-12
+
+### Added
+
+- Select any part of an assistant answer and quote it into the composer for a
+  focused follow-up question.
+- Preserve quoted-answer context in conversation history and synchronized
+  message records.
+
+### Fixed
+
+- Keep the Reader translation spinner limited to active streaming so completed
+  translations display as stable text without a lingering loading indicator.
+
 ## 1.0.15 - 2026-10-12
 
 ### Improved

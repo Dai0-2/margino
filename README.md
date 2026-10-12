@@ -23,7 +23,7 @@
   <p>
     <a href="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml"><img src="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-202020" alt="Apache 2.0 license"></a>
-    <img src="https://img.shields.io/badge/version-1.0.15-326bd1" alt="Version 1.0.15">
+    <img src="https://img.shields.io/badge/version-1.0.16-326bd1" alt="Version 1.0.16">
     <img src="https://img.shields.io/badge/Chrome-MV3-347556" alt="Chrome Manifest V3">
     <img src="https://img.shields.io/badge/storage-local--first-606460" alt="Local-first storage">
   </p>

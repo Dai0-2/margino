@@ -1,8 +1,9 @@
 import Dexie from 'dexie';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Conversation } from '../../src/components/chat/Conversation';
+import { Composer } from '../../src/components/composer/Composer';
 import { ModelSelector } from '../../src/components/composer/ModelSelector';
 import { DATABASE_NAME, database } from '../../src/db/PaperFlowDatabase';
 import { getPaperRelations } from '../../src/repositories/libraryRepository';
@@ -21,6 +22,7 @@ beforeEach(async () => {
     codexModels: [],
     bridgeState: 'disconnected',
     uiLanguage: 'en',
+    quotedReply: null,
   });
 });
 
@@ -67,6 +69,36 @@ describe('conversation actions', () => {
     expect(container.querySelectorAll('.message-body .katex')).toHaveLength(4);
     expect(container.querySelector('.message-body .katex-display')).toBeInTheDocument();
     expect(container.querySelector('.message-body .katex-error')).not.toBeInTheDocument();
+  });
+
+  it('quotes selected assistant text in the composer and allows removing it', async () => {
+    useAppStore.setState({
+      messages: [{
+        id: 'assistant:selection',
+        role: 'assistant',
+        content: 'The evidence supports a more precise follow-up question.',
+      }],
+      uiLanguage: 'en',
+    });
+
+    render(<><Conversation /><Composer /></>);
+    const answer = screen.getByText('The evidence supports a more precise follow-up question.');
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(answer);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    fireEvent.pointerUp(answer.closest('.message-body') as HTMLElement, { clientX: 120, clientY: 160 });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ask about selected answer' }));
+    expect(useAppStore.getState().quotedReply).toEqual({
+      messageId: 'assistant:selection',
+      text: 'The evidence supports a more precise follow-up question.',
+    });
+    expect(screen.getByText('Quoted answer')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove quoted answer' }));
+    expect(useAppStore.getState().quotedReply).toBeNull();
   });
 
   it('saves an assistant response as a visible library note', async () => {

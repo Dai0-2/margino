@@ -109,6 +109,15 @@ test('keeps assistant actions visible and saves an answer as a library note', as
   expect(formulaBox!.width).toBeLessThanOrEqual(answerBox!.width);
   expect(actionsBox!.y).toBeGreaterThanOrEqual(answerBox!.y + answerBox!.height);
   await expect(page.getByText('First response 0.8s')).toBeVisible();
+  const selectedAnswer = page.getByText('The paper introduces a faster evidence retrieval workflow.');
+  await selectedAnswer.selectText();
+  await selectedAnswer.dispatchEvent('pointerup', { clientX: 210, clientY: 280 });
+  await page.getByRole('button', { name: 'Ask about selected answer' }).click();
+  await expect(page.getByText('Quoted answer')).toBeVisible();
+  await expect(page.getByText('The paper introduces a faster evidence retrieval workflow.')).toHaveCount(2);
+  await expect(page.getByLabel('Ask about this paper')).toBeFocused();
+  await page.screenshot({ path: testInfo.outputPath('answer-quote.png'), fullPage: true });
+  await page.getByRole('button', { name: 'Remove quoted answer' }).click();
   await page.getByRole('button', { name: 'gpt-4.1-mini' }).click();
   await expect(page.getByRole('dialog', { name: 'Choose model' })).toBeVisible();
   await expect(page.getByLabel('Custom model ID')).toBeVisible();
