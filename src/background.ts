@@ -4,9 +4,11 @@ import {
   hasRecentRedirectLoop,
   isArxivPdfUrl,
   isDirectPdfUrl,
+  isScienceDirectPdfUrl,
   parseBackgroundRequest,
   readerPath,
   redirectGuardFor,
+  scienceDirectReaderHostUrl,
   type BackgroundRequest,
   type ReaderLaunchSource,
 } from './services/backgroundRouting';
@@ -28,6 +30,8 @@ const OPEN_LIBRARY_MENU = 'paperflow-open-library';
 const REDIRECT_GUARD_PREFIX = 'paperflow:reader-redirect:';
 const EMBEDDED_READER_PREFIX = 'paperflow:embedded-reader:';
 const EMBEDDED_READER_SETTLE_MS = 1_000;
+const PENDING_SCIENCEDIRECT_WINDOW_MS = 15_000;
+const pendingScienceDirectNavigations = new Map<number, string>();
 
 registerBrowserApiHandlers();
 registerNativeHostRelay();
@@ -159,6 +163,25 @@ async function openArxivReader(tabId: number, rawUrl: string, title: string): Pr
   await chrome.tabs.update(tabId, { url: hostUrl });
 }
 
+async function openScienceDirectReader(
+  tabId: number,
+  rawUrl: string,
+  title: string,
+): Promise<void> {
+  const hostUrl = scienceDirectReaderHostUrl(rawUrl, title);
+  if (!hostUrl) return;
+  await chrome.tabs.update(tabId, { url: hostUrl });
+}
+
+function rememberScienceDirectNavigation(tabId: number, rawUrl: string): void {
+  pendingScienceDirectNavigations.set(tabId, rawUrl);
+  setTimeout(() => {
+    if (pendingScienceDirectNavigations.get(tabId) === rawUrl) {
+      pendingScienceDirectNavigations.delete(tabId);
+    }
+  }, PENDING_SCIENCEDIRECT_WINDOW_MS);
+}
+
 async function redirectDirectPdf(tabId: number, rawUrl: string, title: string): Promise<void> {
   const key = `${REDIRECT_GUARD_PREFIX}${tabId}`;
   const stored = await chrome.storage.session.get(key);
@@ -210,9 +233,28 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
     await chrome.tabs.create({
       url: arxivReaderHostUrl(paper.url, paper.title)
+        || scienceDirectReaderHostUrl(paper.url, paper.title)
         || readerUrl(paper.url, paper.title, 'context-menu'),
     });
   })();
+});
+
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  if (
+    details.frameId !== 0
+    || details.tabId < 0
+    || !isScienceDirectPdfUrl(details.url)
+  ) {
+    return;
+  }
+  rememberScienceDirectNavigation(details.tabId, details.url);
+  void chrome.storage.local.get('defaultOpenReader').then(({ defaultOpenReader }) => {
+    if (defaultOpenReader === false) {
+      pendingScienceDirectNavigations.delete(details.tabId);
+      return;
+    }
+    void openScienceDirectReader(details.tabId, details.url, '');
+  });
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -227,8 +269,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         return;
       }
       if (await hasEmbeddedReader(tabId, rawUrl, changeInfo)) return;
+      const pendingScienceDirectUrl = pendingScienceDirectNavigations.get(tabId);
+      if (pendingScienceDirectUrl) {
+        await openScienceDirectReader(tabId, pendingScienceDirectUrl, tab.title || '');
+        return;
+      }
       if (isArxivPdfUrl(rawUrl)) {
         await openArxivReader(tabId, rawUrl, tab.title || '');
+        return;
+      }
+      if (isScienceDirectPdfUrl(rawUrl)) {
+        await openScienceDirectReader(tabId, rawUrl, tab.title || '');
         return;
       }
       await redirectDirectPdf(tabId, rawUrl, tab.title || '');
@@ -237,6 +288,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
+  pendingScienceDirectNavigations.delete(tabId);
   void chrome.storage.session.remove(`${EMBEDDED_READER_PREFIX}${tabId}`);
   void chrome.storage.session.remove(`${REDIRECT_GUARD_PREFIX}${tabId}`);
 });

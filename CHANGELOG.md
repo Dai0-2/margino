@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.18 - 2026-10-13
+
+### Added
+
+- Open ScienceDirect `/pdfft` links in the full PaperFlow Reader while keeping
+  the original public ScienceDirect PDF URL in the browser address bar.
+
+### Fixed
+
+- Intercept ScienceDirect PDF navigation before its short-lived signed asset
+  redirect replaces the stable public paper URL.
+
 ## 1.0.17 - 2026-10-13
 
 ### Added

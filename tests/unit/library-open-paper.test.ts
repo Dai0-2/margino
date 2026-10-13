@@ -31,6 +31,23 @@ describe('library paper launch routing', () => {
     expect(new URL(target.url).pathname).toBe('/abs/2609.04172');
   });
 
+  it('opens ScienceDirect PDF links through the public article host page', () => {
+    const source = 'https://www.sciencedirect.com/science/article/pii/S0924271626002649/pdfft'
+      + '?pid=1-s2.0-S0924271626002649-main.pdf';
+    const target = libraryPaperLaunchTarget({
+      id: 'doi:10.1016/example',
+      title: 'ScienceDirect paper',
+      url: source,
+    });
+
+    expect(target.kind).toBe('web');
+    if (target.kind !== 'web') throw new Error('Expected a public web target.');
+    const url = new URL(target.url);
+    expect(url.pathname).toBe('/science/article/pii/S0924271626002649');
+    expect(url.searchParams.get('paperflowReader')).toBe('1');
+    expect(url.searchParams.get('paperflowPdf')).toBe(source);
+  });
+
   it('keeps non-arXiv papers in the extension reader', () => {
     const target = libraryPaperLaunchTarget({
       id: 'doi:10.1000/example',

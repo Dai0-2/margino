@@ -5,7 +5,7 @@
 PaperFlow has two compatible surfaces:
 
 1. The Chrome Side Panel detects the paper in the active tab and works beside Chrome PDF Viewer, arXiv, OpenReview, or another reader.
-2. The extension-hosted `reader.html` renders a PDF with PDF.js and embeds the same AI workspace. For arXiv, a narrow content-script host mounts this Reader while restoring the original `arxiv.org/pdf/...` URL and favicon. Other direct PDFs use the extension URL; users can disable automatic handling in Settings.
+2. The extension-hosted `reader.html` renders a PDF with PDF.js and embeds the same AI workspace. Narrow content-script hosts mount this Reader on arXiv and ScienceDirect while restoring the original public PDF URL. Other direct PDFs use the extension URL; users can disable automatic handling in Settings.
 
 PaperFlow does not inspect another extension's DOM, use Google Scholar private APIs, or include Google Scholar PDF Reader code or assets.
 
@@ -49,9 +49,9 @@ before the annotation is written, so both records enter the encrypted sync log.
 
 ## PDF loading and context
 
-- Remote documents require a matching host permission. arXiv and OpenReview are
-  predeclared; other HTTP/HTTPS origins are requested only when the user opens a
-  PDF from that host.
+- Remote documents require a matching host permission. arXiv and ScienceDirect
+  are predeclared for their public-URL Reader hosts; other HTTP/HTTPS origins
+  are requested only when the user opens a PDF from that host.
 - The Side Panel uses active-tab metadata without fetching the PDF. It extracts
   remote PDF text only when the user first requests AI context.
 - Local files are loaded either from a user-selected `File` or from a direct

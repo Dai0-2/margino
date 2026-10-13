@@ -6,7 +6,7 @@ account, device, or signing service.
 
 ## Repository gate
 
-- [x] `package.json` and generated manifest use `1.0.17`.
+- [x] `package.json` and generated manifest use `1.0.18`.
 - [x] TypeScript strict check passes.
 - [x] Unit and integration tests pass.
 - [x] Chromium E2E suite passes for Side Panel-sized UI, Reader, Library,
@@ -24,7 +24,8 @@ account, device, or signing service.
 ## Manual product gate
 
 - [ ] Load the final unpacked `dist/` in a clean Chrome profile.
-- [ ] Open a public arXiv PDF, a normal HTTPS PDF, a local PDF, and a scanned PDF.
+- [ ] Open public arXiv and ScienceDirect PDFs, a normal HTTPS PDF, a local PDF,
+  and a scanned PDF; confirm the public arXiv and ScienceDirect URLs remain visible.
 - [ ] Confirm Reader canvas is nonblank and text, annotations, and controls do
   not overlap at desktop and 360–440 px widths in light and dark themes.
 - [ ] Confirm all six annotation types survive reload and exported PDF output is

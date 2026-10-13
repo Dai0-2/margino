@@ -5,15 +5,15 @@
 ## 当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.17`
+- 版本：`1.0.18`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.17-chrome-web-store.zip`。提交审核前确认：
+正式上传包为 `paperflow-ai-v1.0.18-chrome-web-store.zip`。提交审核前确认：
 
 1. 发布者联系邮箱已验证，隐私权政策网址可以公开访问。
 2. 使用上述商品 ID 创建“Chrome 扩展程序”类型的 Google OAuth 客户端。
-3. 上传 `paperflow-ai-v1.0.17-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
+3. 上传 `paperflow-ai-v1.0.18-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
    使用其他已注册扩展 ID 时才设置 `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
 4. 完成真实 Google Drive 同步验证和核心 Reader 流程测试。
 
@@ -40,7 +40,7 @@
 ```text
 PaperFlow 是一个本地优先的学术研究工作台，用于阅读、批注、整理和讨论学术论文。
 
-在保留原始来源网址的同时，通过集成阅读器打开 arXiv 论文和直接 PDF 链接。支持高亮、下划线、删除线、自由绘制、区域批注、文字评论、文档搜索，以及扫描页本地 OCR。
+在保留原始来源网址的同时，通过集成阅读器打开 arXiv、ScienceDirect 论文和直接 PDF 链接。支持高亮、下划线、删除线、自由绘制、区域批注、文字评论、文档搜索，以及扫描页本地 OCR。
 
 使用嵌套文件夹、标签、收藏和最近阅读视图管理论文。笔记、批注、对话和阅读进度默认保存在本地。
 
@@ -94,6 +94,12 @@ PaperFlow 提供一个本地优先的学术研究工作台，帮助用户阅读�
 识别当前活动的 PDF 或论文标签页，并在用户要求时打开阅读器或资料库。
 ```
 
+#### webNavigation
+
+```text
+在 ScienceDirect 的临时签名重定向替换稳定的公开论文地址前，识别用户主动打开的 PDF，使 PaperFlow 阅读器能够保留该公开地址。
+```
+
 #### nativeMessaging
 
 ```text
@@ -122,6 +128,12 @@ PaperFlow 提供一个本地优先的学术研究工作台，帮助用户阅读�
 
 ```text
 在用户主动打开的 arXiv 论文页面中加载 PaperFlow 集成阅读器，同时保留原始 arXiv 地址。
+```
+
+#### ScienceDirect 主机权限
+
+```text
+仅在用户主动打开的 ScienceDirect 论文页面中加载 PaperFlow 集成阅读器，同时保留原始公开 PDF 地址。
 ```
 
 #### 本地文件主机权限
@@ -195,9 +207,10 @@ PaperFlow 不请求用户的 Google 个人资料或邮箱地址。
 
 1. 安装扩展程序。
 2. 打开一篇公开的 arXiv 论文，例如：https://arxiv.org/pdf/2507.16806
-3. 打开 PaperFlow 侧边栏，或使用 PaperFlow 右键菜单命令。
-4. 测试 PDF 翻页、缩放、搜索、高亮、评论、批注及保存到资料库。
-5. 从扩展菜单打开 PaperFlow 资料库，测试文件夹、标签、搜索和最近阅读。
+3. 打开一个 ScienceDirect `/pdfft` 论文链接，确认地址栏仍保留公开的 ScienceDirect 地址。
+4. 打开 PaperFlow 侧边栏，或使用 PaperFlow 右键菜单命令。
+5. 测试 PDF 翻页、缩放、搜索、高亮、评论、批注及保存到资料库。
+6. 从扩展菜单打开 PaperFlow 资料库，测试文件夹、标签、搜索和最近阅读。
 
 AI 功能是可选功能。ChatGPT 订阅模式需要安装独立的 PaperFlow Native Host 并完成 Codex 身份验证；用户提供的 OpenAI 兼容 API 由扩展直接连接，不需要 Native Host。
 
@@ -224,7 +237,7 @@ Native Host 下载包已提供 SHA-256，目前未签名，Windows/macOS 可能�
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端类型为 Chrome 扩展程序，并使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 权限范围只有 `drive.file`。
-- [ ] 最终上传包是 `paperflow-ai-v1.0.17-chrome-web-store.zip`，不是源码或
+- [ ] 最终上传包是 `paperflow-ai-v1.0.18-chrome-web-store.zip`，不是源码或
   Native Host 压缩包。
 - [ ] 隐私政策网址公开、稳定且可以直接访问。
 - [ ] 商店截图中不存在凭据或私人数据。

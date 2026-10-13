@@ -23,7 +23,7 @@
   <p>
     <a href="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml"><img src="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-202020" alt="Apache 2.0 license"></a>
-    <img src="https://img.shields.io/badge/version-1.0.17-326bd1" alt="Version 1.0.17">
+    <img src="https://img.shields.io/badge/version-1.0.18-326bd1" alt="Version 1.0.18">
     <img src="https://img.shields.io/badge/Chrome-MV3-347556" alt="Chrome Manifest V3">
     <img src="https://img.shields.io/badge/storage-local--first-606460" alt="Local-first storage">
   </p>
@@ -141,8 +141,8 @@ Read the [privacy notice](docs/privacy.md), [security policy](SECURITY.md), and
 [Install PaperFlow from the Chrome Web Store](https://chromewebstore.google.com/detail/paperflow-ai/dffiahjmpkmellmjijffpcofoahbccoc).
 
 PaperFlow supports Chrome 114 or newer on macOS, Windows, and Linux. The
-integrated Reader handles local and remote PDFs; arXiv PDF pages retain their
-original `arxiv.org/pdf/...` address while PaperFlow runs in the page.
+integrated Reader handles local and remote PDFs; arXiv and ScienceDirect PDF
+pages retain their original public address while PaperFlow runs in the page.
 
 The Reader, annotations, research library, local storage, and Google Drive sync
 work directly from the extension. They do not require the Native Host.

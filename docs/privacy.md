@@ -79,8 +79,10 @@ the required optional host permission before the request.
 |---|---|
 | `sidePanel` | Show the research workspace beside the active tab |
 | `tabs` | Identify the active paper and open Reader or Library tabs |
+| `webNavigation` | Detect a user-opened ScienceDirect PDF before its temporary signed redirect replaces the public paper URL |
 | `storage` | Store local settings, redirect-loop guards, and an optional device-local API key |
 | `https://arxiv.org/*` | Mount the integrated Reader while preserving the original arXiv PDF URL and site icon |
+| `https://sciencedirect.com/*` | Mount the integrated Reader on user-opened ScienceDirect paper pages while preserving the public PDF URL |
 | `file:///*` | Open a direct local PDF only after the user enables Chrome's per-extension file access; PaperFlow does not enumerate local files |
 | `contextMenus` | Offer Reader, save, and Library commands |
 | `nativeMessaging` | Use an optional local Native Host for ChatGPT subscription access through Codex |

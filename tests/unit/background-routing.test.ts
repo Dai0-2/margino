@@ -4,9 +4,11 @@ import {
   hasRecentRedirectLoop,
   isArxivPdfUrl,
   isDirectPdfUrl,
+  isScienceDirectPdfUrl,
   parseBackgroundRequest,
   readerPath,
   redirectGuardFor,
+  scienceDirectReaderHostUrl,
 } from '../../src/services/backgroundRouting';
 
 describe('background routing', () => {
@@ -15,6 +17,9 @@ describe('background routing', () => {
     expect(isDirectPdfUrl('http://example.org/PAPER.PDF#page=2')).toBe(true);
     expect(isDirectPdfUrl('https://arxiv.org/pdf/2604.13016#page=1.00')).toBe(true);
     expect(isDirectPdfUrl('https://www.arxiv.org/pdf/2507.16806v2')).toBe(true);
+    expect(isDirectPdfUrl(
+      'https://www.sciencedirect.com/science/article/pii/S0924271626002649/pdfft?pid=paper.pdf',
+    )).toBe(true);
     expect(isDirectPdfUrl('file:///Users/researcher/Downloads/paper.pdf')).toBe(true);
     expect(isDirectPdfUrl('file:///Users/researcher/Downloads/PAPER.PDF#page=2')).toBe(true);
     expect(isDirectPdfUrl('https://arxiv.org/abs/2604.13016')).toBe(false);
@@ -35,6 +40,23 @@ describe('background routing', () => {
     expect(host.searchParams.get('paperflowReader')).toBe('1');
     expect(host.searchParams.get('paperflowHash')).toBe('page=4');
     expect(host.searchParams.get('paperflowTitle')).toBe('Paper title');
+  });
+
+  it('creates a ScienceDirect host page that preserves the public PDF URL', () => {
+    const source = 'https://www.sciencedirect.com/science/article/pii/S0924271626002649/pdfft'
+      + '?md5=5e6707557b1d825451194b355575898e'
+      + '&pid=1-s2.0-S0924271626002649-main.pdf';
+    expect(isScienceDirectPdfUrl(source)).toBe(true);
+    const host = new URL(scienceDirectReaderHostUrl(source, 'Paper title')!);
+
+    expect(host.origin).toBe('https://www.sciencedirect.com');
+    expect(host.pathname).toBe('/science/article/pii/S0924271626002649');
+    expect(host.searchParams.get('paperflowReader')).toBe('1');
+    expect(host.searchParams.get('paperflowPdf')).toBe(source);
+    expect(host.searchParams.get('paperflowTitle')).toBe('Paper title');
+    expect(isScienceDirectPdfUrl(
+      'https://www.sciencedirect.com/science/article/pii/S0924271626002649',
+    )).toBe(false);
   });
 
   it('marks Reader launches with a bounded redirect depth', () => {
@@ -109,6 +131,15 @@ describe('background routing', () => {
     })).toEqual({
       type: 'paperflow:reader-unmounting',
       sourceUrl: 'https://arxiv.org/pdf/2507.16806',
+    });
+    expect(parseBackgroundRequest({
+      type: 'paperflow:reader-mounted',
+      sourceUrl: 'https://www.sciencedirect.com/science/article/pii/S0924271626002649/pdfft'
+        + '?pid=1-s2.0-S0924271626002649-main.pdf',
+    })).toEqual({
+      type: 'paperflow:reader-mounted',
+      sourceUrl: 'https://www.sciencedirect.com/science/article/pii/S0924271626002649/pdfft'
+        + '?pid=1-s2.0-S0924271626002649-main.pdf',
     });
     expect(parseBackgroundRequest({
       type: 'paperflow:reader-mounted',

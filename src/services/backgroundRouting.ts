@@ -37,7 +37,7 @@ export function isDirectPdfUrl(rawUrl: string): boolean {
   const url = readerSourceUrl(rawUrl);
   if (!url) return false;
   if (/\.pdf$/i.test(url.pathname)) return true;
-  return isArxivPdfUrl(rawUrl);
+  return isArxivPdfUrl(rawUrl) || isScienceDirectPdfUrl(rawUrl);
 }
 
 export function isArxivPdfUrl(rawUrl: string): boolean {
@@ -55,6 +55,31 @@ export function arxivReaderHostUrl(rawUrl: string, title = ''): string | undefin
   const host = new URL(`/abs/${identifier}`, source.origin);
   host.searchParams.set('paperflowReader', '1');
   if (source.hash) host.searchParams.set('paperflowHash', source.hash.slice(1));
+  if (title) host.searchParams.set('paperflowTitle', title.slice(0, 1_000));
+  return host.toString();
+}
+
+export function isScienceDirectPdfUrl(rawUrl: string): boolean {
+  const url = webUrl(rawUrl);
+  if (!url) return false;
+  const scienceDirectHost = url.hostname === 'sciencedirect.com'
+    || url.hostname === 'www.sciencedirect.com';
+  return scienceDirectHost
+    && /^\/science\/article\/pii\/[a-z0-9]+\/pdfft\/?$/i.test(url.pathname);
+}
+
+export function scienceDirectReaderHostUrl(
+  rawUrl: string,
+  title = '',
+): string | undefined {
+  const source = webUrl(rawUrl);
+  if (!source || !isScienceDirectPdfUrl(source.toString())) return undefined;
+  const identifier = source.pathname
+    .match(/^\/science\/article\/pii\/([a-z0-9]+)\/pdfft\/?$/i)?.[1];
+  if (!identifier) return undefined;
+  const host = new URL(`/science/article/pii/${identifier}`, source.origin);
+  host.searchParams.set('paperflowReader', '1');
+  host.searchParams.set('paperflowPdf', source.toString());
   if (title) host.searchParams.set('paperflowTitle', title.slice(0, 1_000));
   return host.toString();
 }
@@ -118,7 +143,7 @@ export function parseBackgroundRequest(value: unknown): BackgroundRequest | unde
     && typeof input.sourceUrl === 'string'
   ) {
     const sourceUrl = webUrl(input.sourceUrl)?.toString();
-    return sourceUrl && isArxivPdfUrl(sourceUrl)
+    return sourceUrl && (isArxivPdfUrl(sourceUrl) || isScienceDirectPdfUrl(sourceUrl))
       ? { type: input.type, sourceUrl }
       : undefined;
   }

@@ -5,11 +5,11 @@
 ## 一、当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.17`
+- 版本：`1.0.18`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.17-chrome-web-store.zip`，可上传到上述现有
+正式上传包为 `paperflow-ai-v1.0.18-chrome-web-store.zip`，可上传到上述现有
 Chrome Web Store 商品。
 
 点击“提请审核”前确认：
@@ -18,7 +18,7 @@ Chrome Web Store 商品。
 2. Google Drive API 已启用，OAuth 客户端类型为 Chrome 扩展程序，并绑定上述商品 ID。
 3. 确认生产 OAuth Client ID 已内置；只有使用其他已注册扩展 ID 时才配置
    `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
-4. 上传 `paperflow-ai-v1.0.17-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
+4. 上传 `paperflow-ai-v1.0.18-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
 5. 完成真实 Google Drive 同步和核心 Reader 流程测试。
 
 ## 二、商品详情
@@ -50,7 +50,7 @@ Chrome Web Store 商品。
 ```text
 PaperFlow is a local-first research workspace for reading, annotating, organizing, and discussing academic papers.
 
-Open arXiv and direct PDF links in an integrated reader while preserving the original source URL. Highlight, underline, strike through, draw, add comments and area notes, search documents, and run local OCR for scanned pages.
+Open arXiv, ScienceDirect, and direct PDF links in an integrated reader while preserving the original source URL. Highlight, underline, strike through, draw, add comments and area notes, search documents, and run local OCR for scanned pages.
 
 Organize papers with nested collections, tags, favorites, and recently read views. Notes, annotations, conversations, and reading progress are stored locally.
 
@@ -112,6 +112,12 @@ Stores interface preferences, redirect-loop protection flags, and an optional us
 Identifies the active PDF or research-paper tab and opens the Reader or Library when requested by the user.
 ```
 
+#### webNavigation
+
+```text
+Detects a user-opened ScienceDirect PDF before its temporary signed redirect replaces the stable public paper URL, so PaperFlow can preserve that URL in the Reader.
+```
+
 #### nativeMessaging
 
 ```text
@@ -140,6 +146,12 @@ Schedules bounded background synchronization and retry work for optional Google 
 
 ```text
 Mounts the integrated PaperFlow Reader on user-opened arXiv paper pages while preserving the original arXiv URL.
+```
+
+#### ScienceDirect 主机权限
+
+```text
+Mounts the integrated PaperFlow Reader only on user-opened ScienceDirect paper pages while preserving the original public PDF URL.
 ```
 
 #### 本地文件主机权限
@@ -206,9 +218,10 @@ No account is required to test the core Reader and Library.
 
 1. Install the extension.
 2. Open a public arXiv paper, for example https://arxiv.org/pdf/2507.16806.
-3. Open the PaperFlow side panel or use a PaperFlow context-menu command.
-4. Test PDF navigation, search, highlighting, comments, annotations, and saving the paper to the Library.
-5. Open the PaperFlow Library from the extension menu and test collections, tags, search, and recently read items.
+3. Open a ScienceDirect /pdfft paper link and confirm the public ScienceDirect URL remains in the address bar.
+4. Open the PaperFlow side panel or use a PaperFlow context-menu command.
+5. Test PDF navigation, search, highlighting, comments, annotations, and saving the paper to the Library.
+6. Open the PaperFlow Library from the extension menu and test collections, tags, search, and recently read items.
 
 AI features are optional. ChatGPT subscription mode requires the separately installed PaperFlow Native Host with Codex authentication. A user-provided OpenAI-compatible API connects directly from the extension and does not require the Native Host.
 
@@ -253,7 +266,7 @@ https://www.googleapis.com/auth/drive.file
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 范围只有 `drive.file`。
-- [ ] 最终上传的是 `paperflow-ai-v1.0.17-chrome-web-store.zip`。
+- [ ] 最终上传的是 `paperflow-ai-v1.0.18-chrome-web-store.zip`。
 - [ ] 隐私政策网址公开且稳定。
 - [ ] 商店截图中不存在秘密或私人数据。
 - [ ] 双 Chrome 配置或双设备加密同步验证通过。

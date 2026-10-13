@@ -6,16 +6,16 @@ The default listing language is English.
 ## Current release identifiers
 
 - Chrome Web Store item ID: `dffiahjmpkmellmjijffpcofoahbccoc`
-- Version: `1.0.17`
+- Version: `1.0.18`
 - Pricing: Free
 - Visibility: Choose according to the current release plan
 
-The final upload is `paperflow-ai-v1.0.17-chrome-web-store.zip`. Before
+The final upload is `paperflow-ai-v1.0.18-chrome-web-store.zip`. Before
 submitting it for review:
 
 1. Verify the publisher contact email and publish the privacy policy URL.
 2. Create a Chrome Extension OAuth client for the store item ID.
-3. Upload `paperflow-ai-v1.0.17-chrome-web-store.zip`. The production OAuth client ID
+3. Upload `paperflow-ai-v1.0.18-chrome-web-store.zip`. The production OAuth client ID
    is already configured; use `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID` only for an
    alternate registered extension ID.
 4. Complete real Google Drive synchronization and core Reader testing.
@@ -49,7 +49,7 @@ English
 ```text
 PaperFlow is a local-first research workspace for reading, annotating, organizing, and discussing academic papers.
 
-Open arXiv and direct PDF links in an integrated reader while preserving the original source URL. Highlight, underline, strike through, draw, add comments and area notes, search documents, and run local OCR for scanned pages.
+Open arXiv, ScienceDirect, and direct PDF links in an integrated reader while preserving the original source URL. Highlight, underline, strike through, draw, add comments and area notes, search documents, and run local OCR for scanned pages.
 
 Organize papers with nested collections, tags, favorites, and recently read views. Notes, annotations, conversations, and reading progress are stored locally.
 
@@ -105,6 +105,12 @@ Stores interface preferences, redirect-loop protection flags, and an optional us
 Identifies the active PDF or research-paper tab and opens the Reader or Library when requested by the user.
 ```
 
+#### webNavigation
+
+```text
+Detects a user-opened ScienceDirect PDF before its temporary signed redirect replaces the stable public paper URL, so PaperFlow can preserve that URL in the Reader.
+```
+
 #### nativeMessaging
 
 ```text
@@ -133,6 +139,12 @@ Schedules bounded background synchronization and retry work for optional Google 
 
 ```text
 Mounts the integrated PaperFlow Reader on user-opened arXiv paper pages while preserving the original arXiv URL.
+```
+
+#### ScienceDirect host access
+
+```text
+Mounts the integrated PaperFlow Reader only on user-opened ScienceDirect paper pages while preserving the original public PDF URL.
 ```
 
 #### Local file host access
@@ -206,9 +218,10 @@ No account is required to test the core Reader and Library.
 
 1. Install the extension.
 2. Open a public arXiv paper, for example https://arxiv.org/pdf/2507.16806.
-3. Open the PaperFlow side panel or use a PaperFlow context-menu command.
-4. Test PDF navigation, search, highlighting, comments, annotations, and saving the paper to the Library.
-5. Open the PaperFlow Library from the extension menu and test collections, tags, search, and recently read items.
+3. Open a ScienceDirect /pdfft paper link and confirm the public ScienceDirect URL remains in the address bar.
+4. Open the PaperFlow side panel or use a PaperFlow context-menu command.
+5. Test PDF navigation, search, highlighting, comments, annotations, and saving the paper to the Library.
+6. Open the PaperFlow Library from the extension menu and test collections, tags, search, and recently read items.
 
 AI features are optional. ChatGPT subscription mode requires the separately installed PaperFlow Native Host with Codex authentication. A user-provided OpenAI-compatible API connects directly from the extension and does not require the Native Host.
 
@@ -238,7 +251,7 @@ recommended before broad public promotion.
   `dffiahjmpkmellmjijffpcofoahbccoc`.
 - [ ] Google OAuth client type is Chrome Extension and uses the same item ID.
 - [ ] Google Drive API is enabled and the only Drive scope is `drive.file`.
-- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.17-chrome-web-store.zip`, not
+- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.18-chrome-web-store.zip`, not
   the source archive or a Native Host package.
 - [ ] Privacy policy URL is public and stable.
 - [ ] Store screenshots contain no secrets or private data.

@@ -1,5 +1,8 @@
 import type { PaperInfo } from '../../types';
-import { arxivReaderHostUrl } from '../backgroundRouting';
+import {
+  arxivReaderHostUrl,
+  scienceDirectReaderHostUrl,
+} from '../backgroundRouting';
 
 export type LibraryPaperLaunchTarget =
   | { kind: 'web'; url: string }
@@ -33,6 +36,8 @@ export function libraryPaperLaunchTarget(
     ? arxivReaderHostUrl(sourceUrl, paper.title)
     : undefined;
   if (arxivHost) return { kind: 'web', url: arxivHost };
+  const scienceDirectHost = scienceDirectReaderHostUrl(paper.url, paper.title);
+  if (scienceDirectHost) return { kind: 'web', url: scienceDirectHost };
 
   const parameters = new URLSearchParams({ paperId: paper.id });
   if (paper.url) parameters.set('url', paper.url);
