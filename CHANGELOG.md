@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.17 - 2026-10-13
+
+### Added
+
+- Open downloaded and other direct `file://` PDF URLs in PaperFlow when Chrome's
+  per-extension file access is enabled.
+- Show the current local-file permission state in Reader settings with a direct
+  link to the relevant Chrome extension page.
+
+### Fixed
+
+- Keep local non-PDF files out of automatic Reader routing and preserve the
+  existing redirect-loop guard for local PDF tabs.
+
 ## 1.0.16 - 2026-10-12
 
 ### Added

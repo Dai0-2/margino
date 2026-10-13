@@ -13,6 +13,10 @@ import {
 import { paperFromUrl } from './services/paper';
 import { registerBrowserApiHandlers } from './services/browserApi';
 import { registerNativeHostRelay } from './services/bridge';
+import {
+  isLocalFileAccessAllowed,
+  isLocalFileUrl,
+} from './services/localFileAccess';
 import { syncEngine } from './sync/SyncEngine';
 import { SYNC_SOON_ALARM } from './sync/operationLog';
 
@@ -194,14 +198,21 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
   if (info.menuItemId !== OPEN_READER_MENU) return;
   const paper = paperFromUrl(rawUrl, tab?.title);
-  if (!/^https?:/i.test(paper.url)) {
+  const localPdf = isLocalFileUrl(paper.url) && isDirectPdfUrl(paper.url);
+  if (!/^https?:/i.test(paper.url) && !localPdf) {
     showActionFeedback(tab?.id, '!', '#9e3737');
     return;
   }
-  void chrome.tabs.create({
-    url: arxivReaderHostUrl(paper.url, paper.title)
-      || readerUrl(paper.url, paper.title, 'context-menu'),
-  });
+  void (async () => {
+    if (localPdf && !await isLocalFileAccessAllowed()) {
+      showActionFeedback(tab?.id, '!', '#9e3737');
+      return;
+    }
+    await chrome.tabs.create({
+      url: arxivReaderHostUrl(paper.url, paper.title)
+        || readerUrl(paper.url, paper.title, 'context-menu'),
+    });
+  })();
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -211,6 +222,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   void chrome.storage.local.get('defaultOpenReader').then(({ defaultOpenReader }) => {
     if (defaultOpenReader === false) return;
     void (async () => {
+      if (isLocalFileUrl(rawUrl) && !await isLocalFileAccessAllowed()) {
+        showActionFeedback(tabId, '!', '#9e3737');
+        return;
+      }
       if (await hasEmbeddedReader(tabId, rawUrl, changeInfo)) return;
       if (isArxivPdfUrl(rawUrl)) {
         await openArxivReader(tabId, rawUrl, tab.title || '');

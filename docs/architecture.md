@@ -54,8 +54,10 @@ before the annotation is written, so both records enter the encrypted sync log.
   PDF from that host.
 - The Side Panel uses active-tab metadata without fetching the PDF. It extracts
   remote PDF text only when the user first requests AI context.
-- Local files are loaded from a user-selected `File`. Offline copies remain
-  device-local unless encrypted PDF backup is explicitly enabled.
+- Local files are loaded either from a user-selected `File` or from a direct
+  `file://` PDF tab after the user enables Chrome's per-extension file access.
+  PaperFlow does not enumerate local files. Offline copies remain device-local
+  unless encrypted PDF backup is explicitly enabled.
 - Pages render lazily. Text extraction yields page-addressable chunks with
   optional section labels rather than one unconditional full-document prompt.
 - Context selection prefers the explicit text selection, then the visible page,

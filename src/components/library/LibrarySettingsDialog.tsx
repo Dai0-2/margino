@@ -19,6 +19,7 @@ import {
 } from '../../services/storage/documentStore';
 import { useAppStore } from '../../store/useAppStore';
 import type { Language, Theme, UiFontFamily } from '../../types';
+import { LocalFileAccessControl } from '../settings/LocalFileAccessControl';
 import { VaultSetup } from '../sync/VaultSetup';
 
 const fontFamilies: { id: UiFontFamily; en: string; zh: string }[] = [
@@ -166,8 +167,8 @@ export function LibrarySettingsDialog(props: {
               )}</strong>
               <small>{text(
                 props.language,
-                'arXiv keeps its original address and site icon.',
-                'arXiv 会保留原始地址和站点图标。',
+                'Web and downloaded PDFs open in the full Reader.',
+                '网页与下载到本机的 PDF 均使用完整阅读器。',
               )}</small>
             </span>
             <input
@@ -176,6 +177,7 @@ export function LibrarySettingsDialog(props: {
               onChange={(event) => setDefaultOpenReader(event.target.checked)}
             />
           </label>
+          {defaultOpenReader && <LocalFileAccessControl language={props.language} />}
         </section>
 
         <section>

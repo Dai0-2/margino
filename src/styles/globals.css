@@ -128,6 +128,15 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .continue-button:disabled { color: var(--faint); background: var(--hover); cursor: default; filter: none; }
 .setting-list strong { display: flex; align-items: center; gap: 6px; }
 .setting-note { margin: 10px 2px 0; color: var(--faint); font-size: calc(10.5px * var(--ui-font-scale, 1)); line-height: 1.5; }
+.file-access-control { min-width: 0; display: grid; grid-template-columns: 20px minmax(0,1fr) auto; align-items: center; gap: 9px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted); }
+.file-access-control > svg { width: 16px; height: 16px; }
+.file-access-control > span { min-width: 0; display: grid; gap: 2px; }
+.file-access-control strong { color: var(--text); font-size: calc(11px * var(--ui-font-scale, 1)); font-weight: 590; }
+.file-access-control small { color: var(--faint); font-size: calc(9.5px * var(--ui-font-scale, 1)); line-height: 1.4; overflow-wrap: anywhere; }
+.file-access-control > button { min-height: 29px; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: calc(10px * var(--ui-font-scale, 1)); white-space: nowrap; }
+.file-access-control > button:hover { background: var(--hover); }
+.file-access-control > button svg { width: 13px; height: 13px; }
+.file-access-control .file-access-ready { color: var(--accent); }
 .font-settings { display: grid; gap: 9px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .font-settings > span { display: flex; align-items: center; gap: 7px; }
 .font-settings > span strong { font-size: calc(12px * var(--ui-font-scale, 1)); font-weight: 570; }

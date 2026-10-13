@@ -94,6 +94,7 @@ export function ReaderOpenState({
   progress,
   error,
   accessRequired,
+  accessKind,
   onUrlChange,
   onSubmit,
   onOpenFile,
@@ -105,6 +106,7 @@ export function ReaderOpenState({
   progress: number;
   error: string;
   accessRequired: boolean;
+  accessKind?: 'host' | 'file';
   onUrlChange: (url: string) => void;
   onSubmit: () => void;
   onOpenFile: () => void;
@@ -124,7 +126,9 @@ export function ReaderOpenState({
     </form>
     <button className="reader-local-file" onClick={onOpenFile}>{text(language, 'Choose local PDF', '选择本地 PDF')}</button>
     {loading && <div className="reader-loading"><LoaderCircle className="spin" />{text(language, 'Loading PDF', '正在加载 PDF')}{progress ? ` · ${Math.round(progress * 100)}%` : '…'}</div>}
-    {error && <div className="reader-error"><AlertCircle /><span>{error}</span>{accessRequired && <button onClick={onGrantAccess}>{text(language, 'Allow this host', '允许此来源')}</button>}</div>}
+    {error && <div className="reader-error"><AlertCircle /><span>{error}</span>{accessRequired && <button onClick={onGrantAccess}>{accessKind === 'file'
+      ? text(language, 'Open extension settings', '打开扩展设置')
+      : text(language, 'Allow this host', '允许此来源')}</button>}</div>}
   </div>;
 }
 

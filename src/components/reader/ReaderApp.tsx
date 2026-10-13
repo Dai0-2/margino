@@ -88,6 +88,7 @@ export function ReaderApp() {
     source,
     activeDocument,
     pendingUrl,
+    pendingAccess,
     urlDraft,
     loading,
     loadProgress,
@@ -650,7 +651,7 @@ export function ReaderApp() {
         }}
       />}
       <section className="reader-document">
-        {!pdfDocument && <ReaderOpenState url={urlDraft} language={uiLanguage} loading={loading} progress={loadProgress} error={error} accessRequired={Boolean(pendingUrl)} onUrlChange={setUrlDraft} onSubmit={() => void prepareUrl(urlDraft)} onOpenFile={() => fileInput.current?.click()} onGrantAccess={() => void grantAccess()} />}
+        {!pdfDocument && <ReaderOpenState url={urlDraft} language={uiLanguage} loading={loading} progress={loadProgress} error={error} accessRequired={Boolean(pendingUrl)} accessKind={pendingAccess} onUrlChange={setUrlDraft} onSubmit={() => void prepareUrl(urlDraft)} onOpenFile={() => fileInput.current?.click()} onGrantAccess={() => void grantAccess()} />}
         {pdfDocument && <>
           <AnnotationToolbar
             tool={annotationState.tool}

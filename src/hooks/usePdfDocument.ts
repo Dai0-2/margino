@@ -9,6 +9,11 @@ import { contentHash, paperFromUrl } from '../services/paper';
 import { chunksFromPages } from '../services/paperContext';
 import { indexPaper } from '../services/search/searchIndexer';
 import {
+  isLocalFileAccessAllowed,
+  isLocalFileUrl,
+  openExtensionSettings,
+} from '../services/localFileAccess';
+import {
   downloadCloudDocumentForPaper,
   loadStoredDocumentForPaper,
   storePdfDocument,
@@ -54,15 +59,17 @@ function errorMessage(reason: unknown, language: Language) {
 }
 
 async function hasOriginPermission(rawUrl: string) {
-  if (typeof chrome === 'undefined' || !chrome.permissions) return true;
   const url = new URL(rawUrl);
+  if (url.protocol === 'file:') return isLocalFileAccessAllowed();
   if (!/^https?:$/.test(url.protocol)) return false;
+  if (typeof chrome === 'undefined' || !chrome.permissions) return true;
   return chrome.permissions.contains({ origins: [`${url.origin}/*`] });
 }
 
 async function requestOriginPermission(rawUrl: string) {
-  if (typeof chrome === 'undefined' || !chrome.permissions) return true;
   const url = new URL(rawUrl);
+  if (!/^https?:$/.test(url.protocol)) return false;
+  if (typeof chrome === 'undefined' || !chrome.permissions) return true;
   return chrome.permissions.request({ origins: [`${url.origin}/*`] });
 }
 
@@ -77,6 +84,7 @@ export function usePdfDocument() {
   const [documentData, setDocumentData] = useState<Uint8Array>();
   const [activeDocument, setActiveDocument] = useState<PaperDocument>();
   const [pendingUrl, setPendingUrl] = useState('');
+  const [pendingAccess, setPendingAccess] = useState<'host' | 'file'>();
   const [urlDraft, setUrlDraft] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -271,16 +279,27 @@ export function usePdfDocument() {
     if (!value) return;
     try {
       const url = new URL(value);
-      if (!/^https?:$/.test(url.protocol)) {
-        throw new Error(text(uiLanguage, 'Only HTTP and HTTPS PDF URLs are supported. Use the file picker for local PDFs.', '仅支持 HTTP 和 HTTPS PDF 链接。本地 PDF 请使用文件选择器。'));
+      if (!/^(?:https?|file):$/.test(url.protocol)) {
+        throw new Error(text(uiLanguage, 'Only HTTP, HTTPS, and local PDF URLs are supported.', '仅支持 HTTP、HTTPS 和本地 PDF 链接。'));
+      }
+      if (url.protocol === 'file:' && !/\.pdf$/i.test(url.pathname)) {
+        throw new Error(text(uiLanguage, 'Choose a local PDF file.', '请选择本地 PDF 文件。'));
       }
       setUrlDraft(value);
       if (!await hasOriginPermission(value)) {
         setPendingUrl(value);
-        setError(text(uiLanguage, 'PaperFlow needs access to this PDF host before it can load the document.', 'PaperFlow 需要获得此 PDF 来源的访问权限才能加载文档。'));
+        setPendingAccess(isLocalFileUrl(value) ? 'file' : 'host');
+        setError(isLocalFileUrl(value)
+          ? text(
+            uiLanguage,
+            'Chrome is blocking local files. Open extension settings and enable “Allow access to file URLs”.',
+            'Chrome 正在阻止本地文件。请打开扩展设置并开启“允许访问文件网址”。',
+          )
+          : text(uiLanguage, 'PaperFlow needs access to this PDF host before it can load the document.', 'PaperFlow 需要获得此 PDF 来源的访问权限才能加载文档。'));
         return;
       }
       setPendingUrl('');
+      setPendingAccess(undefined);
       await loadSource({
         url: value,
         name: title || decodeURIComponent(url.pathname.split('/').pop() || 'paper.pdf'),
@@ -301,14 +320,40 @@ export function usePdfDocument() {
 
   const grantAccess = useCallback(async () => {
     if (!pendingUrl) return;
+    if (pendingAccess === 'file') {
+      openExtensionSettings();
+      setError(text(
+        uiLanguage,
+        'Enable “Allow access to file URLs” in Chrome, then return to PaperFlow. The PDF will open automatically.',
+        '请在 Chrome 中开启“允许访问文件网址”，然后返回 PaperFlow，PDF 会自动打开。',
+      ));
+      return;
+    }
     if (await requestOriginPermission(pendingUrl)) {
       const url = pendingUrl;
       setPendingUrl('');
+      setPendingAccess(undefined);
       await prepareUrl(url);
     } else {
       setError(text(uiLanguage, 'Access was not granted. Download the PDF and open it as a local file instead.', '未授予访问权限。请下载 PDF 后从本地打开。'));
     }
-  }, [pendingUrl, prepareUrl, uiLanguage]);
+  }, [pendingAccess, pendingUrl, prepareUrl, uiLanguage]);
+
+  useEffect(() => {
+    if (pendingAccess !== 'file' || !pendingUrl) return undefined;
+    const retryLocalFile = () => {
+      if (document.visibilityState !== 'visible') return;
+      void isLocalFileAccessAllowed().then((allowed) => {
+        if (allowed) void prepareUrl(pendingUrl);
+      });
+    };
+    window.addEventListener('focus', retryLocalFile);
+    document.addEventListener('visibilitychange', retryLocalFile);
+    return () => {
+      window.removeEventListener('focus', retryLocalFile);
+      document.removeEventListener('visibilitychange', retryLocalFile);
+    };
+  }, [pendingAccess, pendingUrl, prepareUrl]);
 
   useEffect(() => {
     const parameters = new URLSearchParams(location.search);
@@ -376,6 +421,7 @@ export function usePdfDocument() {
     ensureDocumentData,
     activeDocument,
     pendingUrl,
+    pendingAccess,
     urlDraft,
     loading,
     loadProgress,

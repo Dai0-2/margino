@@ -6,16 +6,16 @@ The default listing language is English.
 ## Current release identifiers
 
 - Chrome Web Store item ID: `dffiahjmpkmellmjijffpcofoahbccoc`
-- Version: `1.0.16`
+- Version: `1.0.17`
 - Pricing: Free
 - Visibility: Choose according to the current release plan
 
-The final upload is `paperflow-ai-v1.0.16-chrome-web-store.zip`. Before
+The final upload is `paperflow-ai-v1.0.17-chrome-web-store.zip`. Before
 submitting it for review:
 
 1. Verify the publisher contact email and publish the privacy policy URL.
 2. Create a Chrome Extension OAuth client for the store item ID.
-3. Upload `paperflow-ai-v1.0.16-chrome-web-store.zip`. The production OAuth client ID
+3. Upload `paperflow-ai-v1.0.17-chrome-web-store.zip`. The production OAuth client ID
    is already configured; use `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID` only for an
    alternate registered extension ID.
 4. Complete real Google Drive synchronization and core Reader testing.
@@ -135,6 +135,12 @@ Schedules bounded background synchronization and retry work for optional Google 
 Mounts the integrated PaperFlow Reader on user-opened arXiv paper pages while preserving the original arXiv URL.
 ```
 
+#### Local file host access
+
+```text
+Opens a direct local PDF only after the user enables Chrome's per-extension “Allow access to file URLs” setting. PaperFlow does not enumerate or scan local files.
+```
+
 #### Optional HTTP and HTTPS host access
 
 ```text
@@ -232,7 +238,7 @@ recommended before broad public promotion.
   `dffiahjmpkmellmjijffpcofoahbccoc`.
 - [ ] Google OAuth client type is Chrome Extension and uses the same item ID.
 - [ ] Google Drive API is enabled and the only Drive scope is `drive.file`.
-- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.16-chrome-web-store.zip`, not
+- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.17-chrome-web-store.zip`, not
   the source archive or a Native Host package.
 - [ ] Privacy policy URL is public and stable.
 - [ ] Store screenshots contain no secrets or private data.

@@ -15,8 +15,11 @@ describe('background routing', () => {
     expect(isDirectPdfUrl('http://example.org/PAPER.PDF#page=2')).toBe(true);
     expect(isDirectPdfUrl('https://arxiv.org/pdf/2604.13016#page=1.00')).toBe(true);
     expect(isDirectPdfUrl('https://www.arxiv.org/pdf/2507.16806v2')).toBe(true);
+    expect(isDirectPdfUrl('file:///Users/researcher/Downloads/paper.pdf')).toBe(true);
+    expect(isDirectPdfUrl('file:///Users/researcher/Downloads/PAPER.PDF#page=2')).toBe(true);
     expect(isDirectPdfUrl('https://arxiv.org/abs/2604.13016')).toBe(false);
     expect(isDirectPdfUrl('https://example.org/viewer?file=paper.pdf')).toBe(false);
+    expect(isDirectPdfUrl('file:///Users/researcher/Downloads/notes.txt')).toBe(false);
     expect(isDirectPdfUrl('chrome-extension://example/reader.pdf')).toBe(false);
   });
 
@@ -57,6 +60,13 @@ describe('background routing', () => {
       .toBe(false);
     expect(hasRecentRedirectLoop('https://example.org/paper.pdf', guard, now + 16_000))
       .toBe(false);
+
+    const localGuard = redirectGuardFor('file:///Users/researcher/paper.pdf#page=2', now);
+    expect(hasRecentRedirectLoop(
+      'file:///Users/researcher/paper.pdf#page=8',
+      localGuard,
+      now + 1_000,
+    )).toBe(true);
   });
 
   it('creates a conflict screen that does not auto-load the PDF', () => {

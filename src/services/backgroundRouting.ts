@@ -24,8 +24,17 @@ function webUrl(rawUrl: string): URL | undefined {
   }
 }
 
+function readerSourceUrl(rawUrl: string): URL | undefined {
+  try {
+    const url = new URL(rawUrl);
+    return /^(?:https?|file):$/.test(url.protocol) ? url : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function isDirectPdfUrl(rawUrl: string): boolean {
-  const url = webUrl(rawUrl);
+  const url = readerSourceUrl(rawUrl);
   if (!url) return false;
   if (/\.pdf$/i.test(url.pathname)) return true;
   return isArxivPdfUrl(rawUrl);
@@ -70,8 +79,8 @@ export function readerPath(
 }
 
 export function redirectGuardFor(rawUrl: string, redirectedAt: number): RedirectGuard {
-  const url = webUrl(rawUrl);
-  if (!url) throw new Error('Only HTTP and HTTPS URLs can be redirected.');
+  const url = readerSourceUrl(rawUrl);
+  if (!url) throw new Error('Only HTTP, HTTPS, and local file URLs can be redirected.');
   url.hash = '';
   return { sourceUrl: url.toString(), redirectedAt };
 }

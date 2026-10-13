@@ -5,11 +5,11 @@
 ## 一、当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.16`
+- 版本：`1.0.17`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.16-chrome-web-store.zip`，可上传到上述现有
+正式上传包为 `paperflow-ai-v1.0.17-chrome-web-store.zip`，可上传到上述现有
 Chrome Web Store 商品。
 
 点击“提请审核”前确认：
@@ -18,7 +18,7 @@ Chrome Web Store 商品。
 2. Google Drive API 已启用，OAuth 客户端类型为 Chrome 扩展程序，并绑定上述商品 ID。
 3. 确认生产 OAuth Client ID 已内置；只有使用其他已注册扩展 ID 时才配置
    `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
-4. 上传 `paperflow-ai-v1.0.16-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
+4. 上传 `paperflow-ai-v1.0.17-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
 5. 完成真实 Google Drive 同步和核心 Reader 流程测试。
 
 ## 二、商品详情
@@ -142,6 +142,12 @@ Schedules bounded background synchronization and retry work for optional Google 
 Mounts the integrated PaperFlow Reader on user-opened arXiv paper pages while preserving the original arXiv URL.
 ```
 
+#### 本地文件主机权限
+
+```text
+Opens a direct local PDF only after the user enables Chrome's per-extension “Allow access to file URLs” setting. PaperFlow does not enumerate or scan local files.
+```
+
 #### 可选 HTTP 和 HTTPS 主机权限
 
 ```text
@@ -247,7 +253,7 @@ https://www.googleapis.com/auth/drive.file
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 范围只有 `drive.file`。
-- [ ] 最终上传的是 `paperflow-ai-v1.0.16-chrome-web-store.zip`。
+- [ ] 最终上传的是 `paperflow-ai-v1.0.17-chrome-web-store.zip`。
 - [ ] 隐私政策网址公开且稳定。
 - [ ] 商店截图中不存在秘密或私人数据。
 - [ ] 双 Chrome 配置或双设备加密同步验证通过。

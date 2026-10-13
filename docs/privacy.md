@@ -81,6 +81,7 @@ the required optional host permission before the request.
 | `tabs` | Identify the active paper and open Reader or Library tabs |
 | `storage` | Store local settings, redirect-loop guards, and an optional device-local API key |
 | `https://arxiv.org/*` | Mount the integrated Reader while preserving the original arXiv PDF URL and site icon |
+| `file:///*` | Open a direct local PDF only after the user enables Chrome's per-extension file access; PaperFlow does not enumerate local files |
 | `contextMenus` | Offer Reader, save, and Library commands |
 | `nativeMessaging` | Use an optional local Native Host for ChatGPT subscription access through Codex |
 | `identity` | Request Google Drive authorization |
