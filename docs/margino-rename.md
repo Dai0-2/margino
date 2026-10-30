@@ -37,3 +37,5 @@ Optional AI features support ChatGPT subscriptions through the local Native Host
 Your library is stored locally. Optional Google Drive synchronization uses your own Google account. Existing PaperFlow users keep their library, annotations, and sign-in when upgrading to Margino.
 
 新版官网与 README 使用 `website/showcase` 的确定性演示画面；它们用于说明交互，不代表性能测试或用户实际同步记录。旧截图和视频作为历史资产保留，不再作为首页主图。
+
+商店宣传素材位于交付目录的 `store-assets/`：三张 `1280×800` 截图、`440×280` 小型宣传图和 `1400×560` 顶部宣传图，均为无透明通道的 JPEG。商店图标为单独的 `margino-icon-128.png`。
