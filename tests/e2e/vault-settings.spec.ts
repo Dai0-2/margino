@@ -8,7 +8,7 @@ test('shows the correct Google sync entry without breaking narrow settings layou
   await page.goto('/');
   await page.getByLabel('Settings and more').click();
 
-  await expect(page.getByRole('checkbox', { name: /Open direct PDFs in PaperFlow/ }))
+  await expect(page.getByRole('checkbox', { name: /Open direct PDFs in Margino/ }))
     .toBeChecked();
   await expect(page.getByRole('heading', { name: 'Sync' })).toBeVisible();
   const pdfBackup = page.getByRole('checkbox', { name: /Back up offline PDFs/ });

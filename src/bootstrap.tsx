@@ -10,7 +10,7 @@ function recoveryUrl(error: unknown): string {
   url.searchParams.set('from', window.location.pathname);
   url.searchParams.set(
     'reason',
-    error instanceof Error ? error.message : 'The PaperFlow database could not be opened.',
+    error instanceof Error ? error.message : 'The Margino database could not be opened.',
   );
   return url.toString();
 }

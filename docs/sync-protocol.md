@@ -1,8 +1,8 @@
-# PaperFlow Sync Protocol
+# Margino Sync Protocol
 
 ## Scope
 
-PaperFlow synchronizes one personal library through the user's Google Drive. It
+Margino synchronizes one personal library through the user's Google Drive. It
 covers saved papers, aliases, collections, tags, documents, notes, annotations,
 conversations, paper memory, selections, reading state, and an allowlist of
 non-sensitive settings. Temporary workspaces, search indexes, OCR caches, OAuth
@@ -16,7 +16,7 @@ snapshot is validated before it is used.
 
 ## Drive layout
 
-PaperFlow requests only `https://www.googleapis.com/auth/drive.file` and creates
+Margino requests only `https://www.googleapis.com/auth/drive.file` and creates
 a visible folder named `PaperFlow`.
 
 | Object | Visibility | Purpose |
@@ -47,7 +47,7 @@ applied.
 The encryption key is stored in `vault.json` so a second device signed in to the
 same Google account can restore the library without another password. This
 prevents ordinary Drive browsing from exposing content, but is not a
-zero-knowledge boundary: access to the Google account and all PaperFlow-created
+zero-knowledge boundary: access to the Google account and all Margino-created
 files is sufficient to restore synchronized data.
 
 ## Operation log
@@ -76,10 +76,10 @@ records.
 
 ## Pull and bootstrap
 
-A new device lists PaperFlow-created objects, applies the latest snapshot, then
+A new device lists Margino-created objects, applies the latest snapshot, then
 replays batches in creation order. An established device uses a persisted Drive
 Changes cursor. HTTP `410` invalidates the cursor and triggers a complete
-PaperFlow-folder rescan.
+Margino-folder rescan.
 
 Snapshots are immutable and generated at most once per 24 hours when the
 service-worker time budget permits. They contain the latest versioned entity

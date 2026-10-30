@@ -162,8 +162,8 @@ export function LibrarySettingsDialog(props: {
             <span>
               <strong>{text(
                 props.language,
-                'Open direct PDFs in PaperFlow',
-                '默认用 PaperFlow 打开直接 PDF',
+                'Open direct PDFs in Margino',
+                '默认用 Margino 打开直接 PDF',
               )}</strong>
               <small>{text(
                 props.language,

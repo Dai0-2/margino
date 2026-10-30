@@ -43,7 +43,7 @@ fn handle(request: Request, emit: &mut impl FnMut(Response)) -> Response {
             response.codex_available = Some(codex::is_available());
             response.credential_store_available = Some(secrets::credential_store_available());
             response.api_key_configured = Some(secrets::api_key_configured());
-            response.detail = Some("PaperFlow native host is available.".to_owned());
+            response.detail = Some("Margino native host is available.".to_owned());
             response
         }
         Request::CodexAuthStatus => match codex::auth_status() {

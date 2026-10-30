@@ -48,7 +48,7 @@
 
   const frame = document.createElement('iframe');
   frame.id = 'paperflow-reader-frame';
-  frame.title = 'PaperFlow Reader';
+  frame.title = 'Margino Reader';
   frame.src = reader.toString();
   frame.allow = 'clipboard-read; clipboard-write';
   frame.style.cssText = [

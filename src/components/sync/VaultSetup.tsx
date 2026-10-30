@@ -163,8 +163,8 @@ export function VaultSetup({ language }: { language: Language }) {
     {stage === 'legacy' && <div className="vault-form">
       <p>{text(
         language,
-        'PaperFlow found data created by an older version. Enter the old password or recovery key once to upgrade it to one-click Google sync.',
-        'PaperFlow 发现旧版本创建的云端数据。输入一次旧密码或恢复密钥，即可升级为 Google 一键同步。',
+        'Margino found data created by an older version. Enter the old password or recovery key once to upgrade it to one-click Google sync.',
+        'Margino 发现旧版本创建的云端数据。输入一次旧密码或恢复密钥，即可升级为 Google 一键同步。',
       )}</p>
       <div className="segmented">
         <button
@@ -216,8 +216,8 @@ export function VaultSetup({ language }: { language: Language }) {
     />}
     <p className="vault-footnote">{text(
       language,
-      'Sync data is encrypted before upload. Anyone with access to this Google account and its PaperFlow Drive files can restore it.',
-      '同步数据会先加密再上传；能够访问此 Google 账号及其 PaperFlow 云端文件的人可以恢复这些数据。',
+      'Sync data is encrypted before upload. Anyone with access to this Google account and its Margino Drive files can restore it.',
+      '同步数据会先加密再上传；能够访问此 Google 账号及其 Margino 云端文件的人可以恢复这些数据。',
     )}</p>
   </div>;
 }

@@ -57,9 +57,9 @@ export function OnboardingView() {
   };
 
   return <main className="onboarding">
-    <div className="onboarding-brand"><BrandMark /><span>PaperFlow</span></div>
+    <div className="onboarding-brand"><BrandMark /><span>Margino</span></div>
     <button className="onboarding-settings" aria-label={text(uiLanguage, 'Open settings', '打开设置')} title={text(uiLanguage, 'Settings', '设置')} onClick={() => setView('settings')}><Settings size={17} /></button>
-    <div className="onboarding-copy"><p className="eyebrow">{text(uiLanguage, 'GET STARTED', '开始使用')}</p><h1>{text(uiLanguage, 'Your paper, understood.', '读懂你的每一篇论文。')}</h1><p>{text(uiLanguage, 'Connect an AI provider and let PaperFlow identify the paper beside this panel.', '连接 AI 服务，让 PaperFlow 识别此面板旁的论文。')}</p></div>
+    <div className="onboarding-copy"><p className="eyebrow">{text(uiLanguage, 'GET STARTED', '开始使用')}</p><h1>{text(uiLanguage, 'Your paper, understood.', '读懂你的每一篇论文。')}</h1><p>{text(uiLanguage, 'Connect an AI provider and let Margino identify the paper beside this panel.', '连接 AI 服务，让 Margino 识别此面板旁的论文。')}</p></div>
     <div className="setup-steps">
       <section className="setup-card">
         <span className="setup-icon">{detecting ? <LoaderCircle className="spin" size={18} /> : paper ? <Check size={18} /> : <FileSearch size={18} />}</span>
@@ -72,7 +72,7 @@ export function OnboardingView() {
       </div>
       {providerMode === 'chatgpt' ? <section className="setup-card">
           <span className="setup-icon">{bridgeState === 'checking' ? <LoaderCircle className="spin" size={18} /> : bridgeState === 'connected' ? <Check size={18} /> : <LogIn size={18} />}</span>
-          <div><strong>{bridgeState === 'connected' ? text(uiLanguage, 'ChatGPT connected', 'ChatGPT 已连接') : text(uiLanguage, 'Sign in with ChatGPT', '登录 ChatGPT')}</strong><p>{bridgeState === 'connected' ? text(uiLanguage, 'Native Host uses your local Codex credentials without exposing them to Chrome.', 'Native Host 使用本机 Codex 凭据，不会向 Chrome 暴露凭据。') : bridgeDetail || text(uiLanguage, 'PaperFlow opens the official Codex browser sign-in and never reads ChatGPT cookies.', 'PaperFlow 会打开官方 Codex 浏览器登录，且不会读取 ChatGPT Cookie。')}</p></div>
+          <div><strong>{bridgeState === 'connected' ? text(uiLanguage, 'ChatGPT connected', 'ChatGPT 已连接') : text(uiLanguage, 'Sign in with ChatGPT', '登录 ChatGPT')}</strong><p>{bridgeState === 'connected' ? text(uiLanguage, 'Native Host uses your local Codex credentials without exposing them to Chrome.', 'Native Host 使用本机 Codex 凭据，不会向 Chrome 暴露凭据。') : bridgeDetail || text(uiLanguage, 'Margino opens the official Codex browser sign-in and never reads ChatGPT cookies.', 'Margino 会打开官方 Codex 浏览器登录，且不会读取 ChatGPT Cookie。')}</p></div>
           {bridgeState !== 'connected' && <button className="setup-action" disabled={bridgeState === 'checking' || !extensionRuntimeAvailable} onClick={connect}>{!extensionRuntimeAvailable ? text(uiLanguage, 'Use Chrome extension', '请在 Chrome 扩展中使用') : bridgeState === 'checking' ? text(uiLanguage, 'Opening…', '打开中…') : text(uiLanguage, 'Sign in', '登录')}</button>}
         </section> : <section className="api-setup-card">
           <div><strong>{apiState === 'connected' ? text(uiLanguage, 'API connected', 'API 已连接') : text(uiLanguage, 'Configure API provider', '配置 API 服务')}</strong><p>{apiState === 'connected' ? apiDetail : apiDetail || (extensionRuntimeAvailable
@@ -94,7 +94,7 @@ export function OnboardingView() {
     />}
     <div className="privacy-note"><ShieldCheck size={15} /><span>{providerMode === 'api'
       ? text(uiLanguage, 'Your API key stays on this device and requests go directly to your chosen provider.', 'API 密钥仅保存在此设备，请求会直接发送到你选择的服务商。')
-      : text(uiLanguage, 'PaperFlow never reads ChatGPT cookies or exposes your access token.', 'PaperFlow 不会读取 ChatGPT Cookie，也不会暴露访问令牌。')}</span></div>
+      : text(uiLanguage, 'Margino never reads ChatGPT cookies or exposes your access token.', 'Margino 不会读取 ChatGPT Cookie，也不会暴露访问令牌。')}</span></div>
     <button className="continue-button" disabled={!ready} onClick={() => setInitialized(true)}>{text(uiLanguage, 'Open workspace', '打开工作区')} <ArrowRight size={16} /></button>
   </main>;
 }

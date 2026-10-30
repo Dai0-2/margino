@@ -163,7 +163,7 @@ translation without commentary, quotation marks, or Markdown fences.",
         )
     } else {
         format!(
-            "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
+            "You are Margino, a precise research-paper reading assistant. Use only the supplied \
 context, say when it is insufficient, answer in {}, and use Markdown. Cite factual claims \
 from the supplied paper as [Page N]. Never invent page numbers. For math, use only $...$ \
 for inline formulas and $$...$$ for display formulas; never wrap formulas in plain brackets.",

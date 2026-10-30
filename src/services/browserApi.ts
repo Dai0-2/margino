@@ -276,7 +276,7 @@ export function registerBrowserApiHandlers(): void {
       started = true;
       const parsed = browserApiChatSchema.safeParse(message);
       if (!parsed.success) {
-        postMessage({ ok: false, error: 'PaperFlow blocked an invalid API request.' });
+        postMessage({ ok: false, error: 'Margino blocked an invalid API request.' });
         return;
       }
       void runBrowserApiChat(
@@ -290,7 +290,7 @@ export function registerBrowserApiHandlers(): void {
 
 function parseBrowserResponse(response: unknown): BridgeResponse {
   if (!response || typeof response !== 'object' || typeof (response as { ok?: unknown }).ok !== 'boolean') {
-    return { ok: false, error: 'The PaperFlow background service returned an invalid response.' };
+    return { ok: false, error: 'The Margino background service returned an invalid response.' };
   }
   return response as BridgeResponse;
 }
@@ -393,7 +393,7 @@ export async function sendBrowserApi(
   if (!await hasOriginPermission(baseUrl)) {
     return {
       ok: false,
-      error: 'PaperFlow does not have access to this API provider. Save and test the endpoint in Settings first.',
+      error: 'Margino does not have access to this API provider. Save and test the endpoint in Settings first.',
     };
   }
   return new Promise((resolve) => {
@@ -401,7 +401,7 @@ export async function sendBrowserApi(
     try {
       port = chrome.runtime.connect({ name: API_STREAM_PORT });
     } catch (error) {
-      resolve({ ok: false, error: error instanceof Error ? error.message : 'Could not connect to the PaperFlow background service.' });
+      resolve({ ok: false, error: error instanceof Error ? error.message : 'Could not connect to the Margino background service.' });
       return;
     }
     let settled = false;
@@ -423,7 +423,7 @@ export async function sendBrowserApi(
       resolve({
         ok: false,
         error: chrome.runtime.lastError?.message
-          || 'The PaperFlow background service disconnected before completing the response.',
+          || 'The Margino background service disconnected before completing the response.',
       });
     });
     port.postMessage({

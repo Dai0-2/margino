@@ -31,11 +31,11 @@ export function RecoveryApp() {
   return <main className="recovery-page">
     <section className="recovery-panel">
       <DatabaseBackup aria-hidden="true" />
-      <p className="recovery-eyebrow">PaperFlow AI</p>
+      <p className="recovery-eyebrow">Margino</p>
       <h1>{chinese ? '资料库需要恢复' : 'Library recovery required'}</h1>
       <p>{chinese
-        ? 'PaperFlow 已停止写入，以免旧客户端或失败的升级继续修改资料。请先导出 IndexedDB 原始数据，再更新或重新安装兼容版本。'
-        : 'PaperFlow stopped writing to protect your library from an incompatible client or failed upgrade. Export the raw IndexedDB data before updating or reinstalling a compatible version.'}</p>
+        ? 'Margino 已停止写入，以免旧客户端或失败的升级继续修改资料。请先导出 IndexedDB 原始数据，再更新或重新安装兼容版本。'
+        : 'Margino stopped writing to protect your library from an incompatible client or failed upgrade. Export the raw IndexedDB data before updating or reinstalling a compatible version.'}</p>
       {reason && <code>{reason}</code>}
       <div className="recovery-actions">
         <button disabled={busy} onClick={() => void exportData()}>

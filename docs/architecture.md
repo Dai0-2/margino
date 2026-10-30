@@ -2,12 +2,12 @@
 
 ## Product boundary
 
-PaperFlow has two compatible surfaces:
+Margino has two compatible surfaces:
 
 1. The Chrome Side Panel detects the paper in the active tab and works beside Chrome PDF Viewer, arXiv, OpenReview, or another reader.
 2. The extension-hosted `reader.html` renders a PDF with PDF.js and embeds the same AI workspace. Narrow content-script hosts mount this Reader on arXiv and ScienceDirect while restoring the original public PDF URL. Other direct PDFs use the extension URL; users can disable automatic handling in Settings.
 
-PaperFlow does not inspect another extension's DOM, use Google Scholar private APIs, or include Google Scholar PDF Reader code or assets.
+Margino does not inspect another extension's DOM, use Google Scholar private APIs, or include Google Scholar PDF Reader code or assets.
 
 ## Components
 
@@ -56,7 +56,7 @@ before the annotation is written, so both records enter the encrypted sync log.
   remote PDF text only when the user first requests AI context.
 - Local files are loaded either from a user-selected `File` or from a direct
   `file://` PDF tab after the user enables Chrome's per-extension file access.
-  PaperFlow does not enumerate local files. Offline copies remain device-local
+  Margino does not enumerate local files. Offline copies remain device-local
   unless encrypted PDF backup is explicitly enabled.
 - Pages render lazily. Text extraction yields page-addressable chunks with
   optional section labels rather than one unconditional full-document prompt.
@@ -105,7 +105,7 @@ plugin generates `dist/manifest.json` and injects the checked-in, non-secret
 production Chrome Extension OAuth client ID. Developers can override it with
 `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID` for another registered extension ID. The
 only Google scope is `https://www.googleapis.com/auth/drive.file`. Chrome
-Identity owns access-token persistence; PaperFlow requests a token per Drive
+Identity owns access-token persistence; Margino requests a token per Drive
 operation and never writes it to application storage.
 
 The Drive adapter creates a user-visible `PaperFlow` folder. `vault.json` is the
@@ -124,13 +124,13 @@ metadata.
 
 The key is loaded into memory while synchronization is active. It is not stored
 in browser local storage or IndexedDB. Because the key is available in the
-PaperFlow-created Drive header, this is account-protected encryption rather than
-zero-knowledge encryption: access to the Google account and all PaperFlow files
+Margino-created Drive header, this is account-protected encryption rather than
+zero-knowledge encryption: access to the Google account and all Margino files
 is sufficient to restore content. OAuth tokens remain under Chrome Identity.
 OpenAI-compatible API keys remain in device-local extension storage and are not
 included in Drive synchronization.
 
-Version 1 password/recovery headers remain readable for migration. PaperFlow
+Version 1 password/recovery headers remain readable for migration. Margino
 requires one successful legacy unlock, then writes a version 2 account-managed
 header with the same UUID and key. Historical encrypted objects are not
 re-encrypted.
@@ -161,11 +161,11 @@ encryption keys are never checkpointed. HTTP 401 requires user reauthorization,
 
 A Chrome extension cannot safely launch arbitrary local executables. It also must not read ChatGPT cookies or store Codex OAuth access tokens. The supported design is a separately installed, open-source native host:
 
-1. The extension connects to the Rust PaperFlow Native Host using Chrome Native Messaging.
+1. The extension connects to the Rust Margino Native Host using Chrome Native Messaging.
 2. The extension probes protocol version 1 and validates requests and responses with Zod; the host validates them again with Serde.
-3. The host checks whether the local Codex credential file is available; the explicit PaperFlow sign-in button can run only the fixed `codex login` command and waits for official browser authorization.
+3. The host checks whether the local Codex credential file is available; the explicit Margino sign-in button can run only the fixed `codex login` command and waits for official browser authorization.
 4. Codex CLI creates, owns, and refreshes its own credentials.
-5. PaperFlow sends bounded paper context to the host.
+5. Margino sends bounded paper context to the host.
 6. The host reads the Codex access token into zeroizing memory, resolves the current default model, and sends a tool-free streaming request directly to the ChatGPT Codex Responses endpoint.
 7. The host forwards only progress, answer deltas, and the completed answer. It does not start the Codex app server, MCP servers, plugins, tools, or a shell.
 
@@ -190,7 +190,7 @@ credential store, so scoped and revocable provider keys are recommended.
 
 ## Native host security requirements
 
-- Allow only the published PaperFlow extension ID.
+- Allow only the published Margino extension ID.
 - Use Native Messaging; do not expose an unauthenticated localhost HTTP port.
 - Validate message schemas and enforce maximum payload sizes.
 - Use a fixed allowlist for the login and credential-refresh CLI actions; never
@@ -218,7 +218,7 @@ Aliases should point to one canonical paper record so the same paper reopens the
 
 Google Scholar PDF Reader URLs with extension ID
 `dahenjhkoodjbpjheillcadbppiidmhp` are treated as public URL wrappers only.
-PaperFlow may recover `file`, `url`, or `pdf` query parameters, but does not
+Margino may recover `file`, `url`, or `pdf` query parameters, but does not
 access the extension's pages or internal state.
 
 ## Build and third-party code

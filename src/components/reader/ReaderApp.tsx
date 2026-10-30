@@ -430,7 +430,7 @@ export function ReaderApp() {
     } catch (reason) {
       setOperationError(reason instanceof Error
         ? reason.message
-        : text(uiLanguage, 'The paper could not be saved to PaperFlow.', '无法将论文保存到 PaperFlow。'));
+        : text(uiLanguage, 'The paper could not be saved to Margino.', '无法将论文保存到 Margino。'));
       throw reason;
     } finally {
       setSavingOffline(false);
@@ -602,7 +602,7 @@ export function ReaderApp() {
   return <main className="reader-app" style={{ '--assistant-width': `${assistantWidth}px` } as React.CSSProperties}>
     <input ref={fileInput} hidden type="file" accept="application/pdf,.pdf" onChange={(event) => { void selectFile(event.target.files?.[0]); event.currentTarget.value = ''; }} />
     <ReaderToolbar
-      title={paper?.title || source?.name || 'PaperFlow Reader'}
+      title={paper?.title || source?.name || 'Margino Reader'}
       page={page}
       pageCount={pageCount}
       scale={scale}

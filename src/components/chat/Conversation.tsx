@@ -119,7 +119,7 @@ export function Conversation() {
   };
   return <div className="conversation" aria-live="polite" aria-busy={messages.some((message) => message.pending)}>
     {messages.map((message, index) => <article className={`message ${message.role}${message.pending ? ' pending' : ''}${message.error ? ' error' : ''}`} key={message.id}>
-      <div className="message-label">{message.role === 'assistant' ? <><span className="assistant-mark"><Check size={10} /></span>PaperFlow</> : text(uiLanguage, 'You', '你')}</div>
+      <div className="message-label">{message.role === 'assistant' ? <><span className="assistant-mark"><Check size={10} /></span>Margino</> : text(uiLanguage, 'You', '你')}</div>
       {message.role === 'assistant' && message.model && <div className="message-runtime">
         <span>{message.model}</span>
         {message.firstTokenMs !== undefined && <span>{text(

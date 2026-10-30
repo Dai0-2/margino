@@ -112,7 +112,7 @@ export class SyncEngine {
       const database = this.database || await openPaperFlowDatabase();
       await updateSyncState(database, {
         status: 'offline',
-        lastError: 'PaperFlow is offline. Local changes remain queued.',
+        lastError: 'Margino is offline. Local changes remain queued.',
         lastErrorCode: 'offline',
       });
       return {

@@ -102,8 +102,8 @@ export function DeviceSetupGuide({
           <strong>{text(language, 'Sign in to Codex', '登录 Codex')}</strong>
           <p>{text(
             language,
-            'Install the official Codex CLI, run codex login, then return to PaperFlow.',
-            '安装官方 Codex CLI，运行 codex login，再返回 PaperFlow。',
+            'Install the official Codex CLI, run codex login, then return to Margino.',
+            '安装官方 Codex CLI，运行 codex login，再返回 Margino。',
           )}</p>
         </li>
       </ol>
@@ -113,7 +113,7 @@ export function DeviceSetupGuide({
           <ExternalLink />{text(language, 'Extension settings', '扩展管理')}
         </button>
         {onOpenSettings && <button type="button" onClick={onOpenSettings}>
-          <Settings />{text(language, 'PaperFlow settings', 'PaperFlow 设置')}
+          <Settings />{text(language, 'Margino settings', 'Margino 设置')}
         </button>}
         <button type="button" onClick={() => void copyCommands()}>
           {copied ? <Check /> : <Clipboard />}

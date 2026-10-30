@@ -186,7 +186,7 @@ jobs:
           pattern: paperflow-native-host-*
           path: release
           merge-multiple: true
-      - name: Publish PaperFlow release
+      - name: Publish Margino release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -204,6 +204,6 @@ jobs:
           Host packages are unsigned and include SHA-256 files for verification.
           EOF
           gh release create "$GITHUB_REF_NAME" release/* \
-            --title "PaperFlow $GITHUB_REF_NAME" \
+            --title "Margino $GITHUB_REF_NAME" \
             --notes-file "$RUNNER_TEMP/release-notes.md" \
             --latest

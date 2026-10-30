@@ -127,7 +127,7 @@ export function paperFromUrl(rawUrl: string, rawTitle?: string): PaperInfo {
 
 export async function detectActivePaper(): Promise<PaperInfo | null> {
   if (typeof chrome === 'undefined' || !chrome.tabs?.query) {
-    return { id: 'preview:paperflow', shortTitle: 'PAPERFLOW PREVIEW', title: 'Open a PDF in Chrome to detect the current paper', source: 'Preview', url: location.href };
+    return { id: 'preview:paperflow', shortTitle: 'MARGINO PREVIEW', title: 'Open a PDF in Chrome to detect the current paper', source: 'Preview', url: location.href };
   }
   const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   const ownOrigin = chrome.runtime?.id ? `chrome-extension://${chrome.runtime.id}/` : '';

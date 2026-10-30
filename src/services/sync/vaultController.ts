@@ -148,7 +148,7 @@ export class VaultController {
 
   private requireLegacyHeader(): LegacyVaultHeader {
     if (!this.header || this.header.version !== 1) {
-      throw new Error('No legacy PaperFlow encrypted sync data was found.');
+      throw new Error('No legacy Margino encrypted sync data was found.');
     }
     return this.header;
   }

@@ -56,7 +56,7 @@ function instructions(language: string, translation: boolean): string {
   if (translation) {
     return `You are a precise translation engine. Translate the supplied source text into ${language === 'zh' ? 'Simplified Chinese' : 'English'}. Preserve technical terminology, equations, citations, and paragraph structure. Return only the translation without commentary, quotation marks, or Markdown fences.`;
   }
-  return `You are PaperFlow, a precise research-paper reading assistant. Use only the supplied context, say when it is insufficient, answer in ${language === 'zh' ? 'Chinese' : 'English'}, and use Markdown. Cite factual claims from the supplied paper as [Page N]. Never invent page numbers. For math, use only $...$ for inline formulas and $$...$$ for display formulas; never wrap formulas in plain brackets.`;
+  return `You are Margino, a precise research-paper reading assistant. Use only the supplied context, say when it is insufficient, answer in ${language === 'zh' ? 'Chinese' : 'English'}, and use Markdown. Cite factual claims from the supplied paper as [Page N]. Never invent page numbers. For math, use only $...$ for inline formulas and $$...$$ for display formulas; never wrap formulas in plain brackets.`;
 }
 
 export function buildApiRequestPayload(

@@ -147,7 +147,7 @@ export function LibraryApp() {
     <header className="library-header">
       <div className="library-brand-area">
         <button className="library-menu-button" title={text(language, 'Toggle navigation', '切换导航栏')} onClick={() => setSidebarOpen((open) => !open)}><Menu /></button>
-        <div className="library-brand"><BrandMark /><strong>PaperFlow</strong><span>{text(language, 'Library', '资料库')}</span></div>
+        <div className="library-brand"><BrandMark /><strong>Margino</strong><span>{text(language, 'Library', '资料库')}</span></div>
       </div>
       <label className="library-search"><Search /><input value={store.searchQuery} onChange={(event) => store.setSearchQuery(event.target.value)} placeholder={text(language, 'Search papers, author:, tag:, collection:, year:', '搜索论文，支持 author:、tag:、collection:、year:')} aria-label={text(language, 'Search library', '搜索资料库')} />{store.searchQuery && <button title={text(language, 'Clear search', '清除搜索')} onClick={() => store.setSearchQuery('')}><X /></button>}</label>
       <div className="library-header-actions">

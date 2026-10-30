@@ -46,7 +46,7 @@ function assertAuthAvailable(): void {
   if (chrome.runtime?.id && chrome.runtime.id !== PRODUCTION_EXTENSION_ID) {
     throw new GoogleAuthError(
       'not-configured',
-      `Google Drive sign-in requires the stable PaperFlow extension ID. This build is ${chrome.runtime.id}; install the device-test or Chrome Web Store build (${PRODUCTION_EXTENSION_ID}).`,
+      `Google Drive sign-in requires the stable Margino extension ID. This build is ${chrome.runtime.id}; install the device-test or Chrome Web Store build (${PRODUCTION_EXTENSION_ID}).`,
     );
   }
 }

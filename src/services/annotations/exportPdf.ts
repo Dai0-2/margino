@@ -99,7 +99,7 @@ function drawAnnotation(page: PDFPage, annotation: Annotation): void {
       borderWidth: 1,
       opacity: 0.95,
     });
-    const contents = annotation.comment?.trim() || annotation.text.trim() || 'PaperFlow note';
+    const contents = annotation.comment?.trim() || annotation.text.trim() || 'Margino note';
     const reference = page.doc.context.register(page.doc.context.obj({
       Type: 'Annot',
       Subtype: 'Text',
@@ -110,7 +110,7 @@ function drawAnnotation(page: PDFPage, annotation: Annotation): void {
         annotation.rect.y + Math.max(annotation.rect.height, radius * 2),
       ],
       Contents: PDFHexString.fromText(contents),
-      T: PDFHexString.fromText('PaperFlow'),
+      T: PDFHexString.fromText('Margino'),
       Name: 'Comment',
       C: [color.red, color.green, color.blue],
       F: 4,
@@ -185,7 +185,7 @@ export function annotationsAsMarkdown(annotations: Annotation[]): string {
     .filter((annotation) => !annotation.deletedAt)
     .sort((left, right) => left.page - right.page || left.createdAt - right.createdAt);
   return [
-    '# PaperFlow annotations',
+    '# Margino annotations',
     '',
     ...visible.flatMap((annotation) => [
       `## Page ${annotation.page} · ${annotation.type || 'highlight'}`,

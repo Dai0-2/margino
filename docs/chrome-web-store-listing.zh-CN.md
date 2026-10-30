@@ -1,19 +1,19 @@
-# PaperFlow AI Chrome 应用商店填写清单
+# Margino Chrome 应用商店填写清单
 
 本文档中的内容可直接复制到 Chrome 应用商店开发者后台。
 
 ## 当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.18`
+- 版本：`1.0.19`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.18-chrome-web-store.zip`。提交审核前确认：
+正式上传包为 `paperflow-ai-v1.0.19-chrome-web-store.zip`。提交审核前确认：
 
 1. 发布者联系邮箱已验证，隐私权政策网址可以公开访问。
 2. 使用上述商品 ID 创建“Chrome 扩展程序”类型的 Google OAuth 客户端。
-3. 上传 `paperflow-ai-v1.0.18-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
+3. 上传 `paperflow-ai-v1.0.19-chrome-web-store.zip`。生产 OAuth Client ID 已内置；只有
    使用其他已注册扩展 ID 时才设置 `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
 4. 完成真实 Google Drive 同步验证和核心 Reader 流程测试。
 
@@ -61,9 +61,9 @@ PaperFlow 不包含广告、行为分析、跟踪或遥测功能。
 
 ### 其他字段
 
-- 官方网址：`https://dai0-2.github.io/paperflow/`
-- 首页网址：`https://dai0-2.github.io/paperflow/`
-- 支持信息页面网址：`https://github.com/Dai0-2/paperflow/issues`
+- 官方网址：`https://dai0-2.github.io/margino/`
+- 首页网址：`https://dai0-2.github.io/margino/`
+- 支持信息页面网址：`https://github.com/Dai0-2/margino/issues`
 - 成人内容：关闭。
 
 ## 隐私权
@@ -179,7 +179,7 @@ PaperFlow 提供一个本地优先的学术研究工作台，帮助用户阅读�
 - 财务和付款信息
 - 位置信息
 
-PaperFlow 不请求用户的 Google 个人资料或邮箱地址。
+Margino 不请求用户的 Google 个人资料或邮箱地址。
 
 上述每个数据类别的用途只选择：
 
@@ -192,13 +192,13 @@ PaperFlow 不请求用户的 Google 个人资料或邮箱地址。
 - 不出售用户数据。
 - 不将用户数据用于广告。
 - 不将用户数据用于信用评估或贷款。
-- 不将用户数据用于与 PaperFlow 单一用途无关的目的。
+- 不将用户数据用于与 Margino 单一用途无关的目的。
 - 网络传输使用 HTTPS。
 - Drive 资料库记录和可选 PDF 备份在上传前于设备端加密。
 
 ### 隐私政策网址
 
-填写 `https://dai0-2.github.io/paperflow/privacy.html`。
+填写 `https://dai0-2.github.io/margino/privacy.html`。
 
 ## 测试说明
 
@@ -237,7 +237,7 @@ Native Host 下载包已提供 SHA-256，目前未签名，Windows/macOS 可能�
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端类型为 Chrome 扩展程序，并使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 权限范围只有 `drive.file`。
-- [ ] 最终上传包是 `paperflow-ai-v1.0.18-chrome-web-store.zip`，不是源码或
+- [ ] 最终上传包是 `paperflow-ai-v1.0.19-chrome-web-store.zip`，不是源码或
   Native Host 压缩包。
 - [ ] 隐私政策网址公开、稳定且可以直接访问。
 - [ ] 商店截图中不存在凭据或私人数据。

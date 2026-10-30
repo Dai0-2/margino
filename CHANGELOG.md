@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.19 — 2026-10-30
+
+- Rebrand the extension, Reader, Library, website, and documentation as Margino.
+- Introduce a new M monogram and update the GitHub/website links.
+- Preserve the Chrome extension ID, OAuth client, Native Host protocol, credential services, local database, and Google Drive folder so existing users retain their data and sign-in.
+
+
 ## 1.0.18 - 2026-10-13
 
 ### Added

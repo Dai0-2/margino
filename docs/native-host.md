@@ -1,6 +1,6 @@
-# PaperFlow Native Host
+# Margino Native Host
 
-PaperFlow uses the separately installed `com.paperflow.ai` Native Messaging
+Margino uses the separately installed `com.paperflow.ai` Native Messaging
 host only for ChatGPT subscription access. The official Codex CLI owns sign-in
 and credential refresh; the Host sends paper-chat requests directly to the
 ChatGPT Codex Responses service.
@@ -60,7 +60,7 @@ the active Windows user proxy and macOS system HTTPS/HTTP proxy when no proxy
 environment variable is set.
 
 The Host never returns the access token to Chrome and does not copy it into a
-PaperFlow credential store. It does not log prompts, responses, paper text, API
+Margino credential store. It does not log prompts, responses, paper text, API
 keys, vault keys, OAuth tokens, or local paths.
 
 ## Legacy credential stores
@@ -78,15 +78,15 @@ read them. The current extension stores new API keys in Chrome extension-local
 storage and does not read these legacy host credentials. Host uninstallers
 preserve legacy credentials by default.
 
-If Secret Service is unavailable on Linux, the host reports that persistent credential storage is unavailable. PaperFlow does not fall back to a plaintext file.
+If Secret Service is unavailable on Linux, the host reports that persistent credential storage is unavailable. Margino does not fall back to a plaintext file.
 
 ## Install a prebuilt package
 
 End users should download only the package for their operating system:
 
-- [Windows](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-windows.zip)
-- [macOS](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-macos.zip)
-- [Linux](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-linux.zip)
+- [Windows](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-windows.zip)
+- [macOS](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-macos.zip)
+- [Linux](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-linux.zip)
 
 Extract the archive. On Windows, double-click `INSTALL-PAPERFLOW.cmd`. On macOS,
 run `bash install-macos.sh`; on Linux, run `sh install-linux.sh`. These packages
@@ -152,7 +152,7 @@ Pass a binary path as the first shell argument or `-BinaryPath` in PowerShell wh
 
 `bridge/paperflow_bridge.py` and `bridge/install.sh` remain available for one compatibility release. The extension probes `status`; a response with `protocolVersion: 1` enables the Rust action names, while a response without a protocol version uses the legacy Python action names. New installations should use the Rust host.
 
-Install the official Codex CLI first and run `codex login`. PaperFlow can also
+Install the official Codex CLI first and run `codex login`. Margino can also
 launch the same official browser sign-in through the fixed `codex login`
 action. The Host reads the resulting local token only inside its own process;
 the extension never receives or stores it.

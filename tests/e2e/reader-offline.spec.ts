@@ -78,8 +78,8 @@ test('stores a PDF offline and runs cancellable local OCR', async ({ page }, tes
   await expect(page.getByLabel('Page number')).toHaveValue('1');
   await expect.poll(async () => (await databaseState(page)).paperId).toBeTruthy();
 
-  await page.getByTitle('Save to PaperFlow').click();
-  const saveDialog = page.getByRole('dialog', { name: 'Save to PaperFlow' });
+  await page.getByTitle('Save to Margino').click();
+  const saveDialog = page.getByRole('dialog', { name: 'Save to Margino' });
   await expect(saveDialog).toBeVisible();
   const folderName = saveDialog.getByLabel('Folder name');
   await folderName.fill('Models');
@@ -89,7 +89,7 @@ test('stores a PDF offline and runs cancellable local OCR', async ({ page }, tes
   await saveDialog.getByRole('button', { name: 'Create' }).click();
   await saveDialog.getByRole('checkbox', { name: 'Keep a local offline PDF' }).check();
   await saveDialog.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(page.getByTitle('Manage PaperFlow folders')).toBeVisible();
+  await expect(page.getByTitle('Manage Margino folders')).toBeVisible();
   await expect.poll(async () => (await databaseState(page)).libraryState).toBe('saved');
   await expect(page.getByTitle('Stored on this device · available offline')).toBeVisible();
   await expect.poll(async () => (await databaseState(page)).documentState).toBe('available');
@@ -100,7 +100,7 @@ test('stores a PDF offline and runs cancellable local OCR', async ({ page }, tes
     .toBe(parent?.id);
   expect(parent).toBeTruthy();
 
-  await page.getByTitle('Manage PaperFlow folders').click();
+  await page.getByTitle('Manage Margino folders').click();
   await expect(saveDialog).toBeVisible();
   await saveDialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(saveDialog).toBeHidden();

@@ -1,4 +1,4 @@
-# PaperFlow AI Chrome Web Store Listing
+# Margino Chrome Web Store Listing
 
 Use this document as the copy source for Chrome Web Store Developer Dashboard.
 The default listing language is English.
@@ -6,16 +6,16 @@ The default listing language is English.
 ## Current release identifiers
 
 - Chrome Web Store item ID: `dffiahjmpkmellmjijffpcofoahbccoc`
-- Version: `1.0.18`
+- Version: `1.0.19`
 - Pricing: Free
 - Visibility: Choose according to the current release plan
 
-The final upload is `paperflow-ai-v1.0.18-chrome-web-store.zip`. Before
+The final upload is `paperflow-ai-v1.0.19-chrome-web-store.zip`. Before
 submitting it for review:
 
 1. Verify the publisher contact email and publish the privacy policy URL.
 2. Create a Chrome Extension OAuth client for the store item ID.
-3. Upload `paperflow-ai-v1.0.18-chrome-web-store.zip`. The production OAuth client ID
+3. Upload `paperflow-ai-v1.0.19-chrome-web-store.zip`. The production OAuth client ID
    is already configured; use `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID` only for an
    alternate registered extension ID.
 4. Complete real Google Drive synchronization and core Reader testing.
@@ -72,9 +72,9 @@ PaperFlow contains no advertising, analytics, tracking, or telemetry.
 
 ### Other fields
 
-- Official website: `https://dai0-2.github.io/paperflow/`
-- Homepage URL: `https://dai0-2.github.io/paperflow/`
-- Support URL: `https://github.com/Dai0-2/paperflow/issues`
+- Official website: `https://dai0-2.github.io/margino/`
+- Homepage URL: `https://dai0-2.github.io/margino/`
+- Support URL: `https://github.com/Dai0-2/margino/issues`
 - Adult content: Off.
 
 ## Privacy
@@ -188,7 +188,7 @@ device when the user explicitly uses AI or encrypted Drive sync:
   in optional Google Drive sync.
 
 Do not select personally identifiable information, health information,
-financial information, location, or payment information. PaperFlow does not
+financial information, location, or payment information. Margino does not
 request the user's Google profile or email address.
 
 For every disclosed category, select only:
@@ -202,14 +202,14 @@ Confirm all applicable limited-use declarations:
 - Data is not sold.
 - Data is not used for advertising.
 - Data is not used for creditworthiness or lending.
-- Data is not used for purposes unrelated to PaperFlow's single purpose.
+- Data is not used for purposes unrelated to Margino's single purpose.
 - Network transfers use HTTPS.
 - Drive library records and optional PDF backups are encrypted locally before
   upload.
 
 ### Privacy policy
 
-Use `https://dai0-2.github.io/paperflow/privacy.html`.
+Use `https://dai0-2.github.io/margino/privacy.html`.
 
 ## Test instructions
 
@@ -251,7 +251,7 @@ recommended before broad public promotion.
   `dffiahjmpkmellmjijffpcofoahbccoc`.
 - [ ] Google OAuth client type is Chrome Extension and uses the same item ID.
 - [ ] Google Drive API is enabled and the only Drive scope is `drive.file`.
-- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.18-chrome-web-store.zip`, not
+- [ ] Final uploaded ZIP is `paperflow-ai-v1.0.19-chrome-web-store.zip`, not
   the source archive or a Native Host package.
 - [ ] Privacy policy URL is public and stable.
 - [ ] Store screenshots contain no secrets or private data.

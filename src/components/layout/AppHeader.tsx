@@ -23,8 +23,8 @@ export function AppHeader() {
     window.open(url, '_blank', 'noopener');
   };
   return <header className="app-header">
-    <button className="brand" onClick={() => setView('chat')} aria-label="PaperFlow home">
-      <BrandMark /><span>PaperFlow</span>
+    <button className="brand" onClick={() => setView('chat')} aria-label="Margino home">
+      <BrandMark /><span>Margino</span>
     </button>
     <div className="header-actions">
       <IconButton icon={Plus} label={text(uiLanguage, 'New thread', '新对话')} onClick={() => void startThread()} />

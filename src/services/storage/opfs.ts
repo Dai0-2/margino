@@ -11,7 +11,7 @@ export class OpfsUnavailableError extends Error {
 
 export class StorageQuotaError extends Error {
   constructor(required: number, available: number) {
-    super(`Not enough browser storage. PaperFlow needs ${formatBytes(required)}, but only ${formatBytes(Math.max(0, available))} is available.`);
+    super(`Not enough browser storage. Margino needs ${formatBytes(required)}, but only ${formatBytes(Math.max(0, available))} is available.`);
     this.name = 'StorageQuotaError';
   }
 }

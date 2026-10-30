@@ -46,8 +46,8 @@ function applyLanguage(nextLanguage) {
   document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
   document.title =
     language === "zh"
-      ? "PaperFlow AI - 让 PDF 成为研究工作区"
-      : "PaperFlow AI - Your PDF is the workspace";
+      ? "Margino - 让 PDF 成为研究工作区"
+      : "Margino - Your PDF is the workspace";
 
   translations.forEach((element) => {
     element.innerHTML = element.dataset[language];

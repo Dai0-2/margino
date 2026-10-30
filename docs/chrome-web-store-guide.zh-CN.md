@@ -1,15 +1,15 @@
-# PaperFlow AI Chrome 应用商店填写教程
+# Margino Chrome 应用商店填写教程
 
 本教程使用中文说明操作步骤；所有需要提交给 Chrome 应用商店审核的正式文案均为英文，可直接复制。
 
 ## 一、当前发布信息
 
 - 商店商品 ID：`dffiahjmpkmellmjijffpcofoahbccoc`
-- 版本：`1.0.18`
+- 版本：`1.0.19`
 - 价格：免费
 - 发布范围：按当前商店发布策略选择
 
-正式上传包为 `paperflow-ai-v1.0.18-chrome-web-store.zip`，可上传到上述现有
+正式上传包为 `paperflow-ai-v1.0.19-chrome-web-store.zip`，可上传到上述现有
 Chrome Web Store 商品。
 
 点击“提请审核”前确认：
@@ -18,7 +18,7 @@ Chrome Web Store 商品。
 2. Google Drive API 已启用，OAuth 客户端类型为 Chrome 扩展程序，并绑定上述商品 ID。
 3. 确认生产 OAuth Client ID 已内置；只有使用其他已注册扩展 ID 时才配置
    `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID`。
-4. 上传 `paperflow-ai-v1.0.18-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
+4. 上传 `paperflow-ai-v1.0.19-chrome-web-store.zip`，不要上传源码 ZIP 或 Native Host ZIP。
 5. 完成真实 Google Drive 同步和核心 Reader 流程测试。
 
 ## 二、商品详情
@@ -71,9 +71,9 @@ PaperFlow contains no advertising, analytics, tracking, or telemetry.
 
 ### 5. 其他字段
 
-- 官方网址：填写 `https://dai0-2.github.io/paperflow/`。
-- 首页网址：填写 `https://dai0-2.github.io/paperflow/`。
-- 支持信息页面网址：填写 `https://github.com/Dai0-2/paperflow/issues`。
+- 官方网址：填写 `https://dai0-2.github.io/margino/`。
+- 首页网址：填写 `https://dai0-2.github.io/margino/`。
+- 支持信息页面网址：填写 `https://github.com/Dai0-2/margino/issues`。
 - 成人内容：关闭。
 
 完成后点击“保存草稿”，不要提交审核。
@@ -190,7 +190,7 @@ All executable application code, PDF.js, OCR components, and language resources 
 App functionality
 ```
 
-不要勾选个人身份、健康、财务、付款或位置信息。PaperFlow 不读取用户的 Google 个人资料或邮箱。
+不要勾选个人身份、健康、财务、付款或位置信息。Margino 不读取用户的 Google 个人资料或邮箱。
 
 确认以下声明：
 
@@ -203,7 +203,7 @@ App functionality
 
 ### 5. 隐私政策
 
-填写正式隐私政策网址：`https://dai0-2.github.io/paperflow/privacy.html`。
+填写正式隐私政策网址：`https://dai0-2.github.io/margino/privacy.html`。
 
 不要填写本地路径、临时预览网址或虚构网址。
 
@@ -266,7 +266,7 @@ https://www.googleapis.com/auth/drive.file
   `dffiahjmpkmellmjijffpcofoahbccoc`。
 - [ ] Google OAuth 客户端使用相同商品 ID。
 - [ ] Google Drive API 已启用，Drive 范围只有 `drive.file`。
-- [ ] 最终上传的是 `paperflow-ai-v1.0.18-chrome-web-store.zip`。
+- [ ] 最终上传的是 `paperflow-ai-v1.0.19-chrome-web-store.zip`。
 - [ ] 隐私政策网址公开且稳定。
 - [ ] 商店截图中不存在秘密或私人数据。
 - [ ] 双 Chrome 配置或双设备加密同步验证通过。

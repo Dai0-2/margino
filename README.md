@@ -1,8 +1,8 @@
 <div align="center">
-  <a href="https://dai0-2.github.io/paperflow/">
-    <img src="public/icons/paperflow-128.png" width="84" height="84" alt="PaperFlow logo">
+  <a href="https://dai0-2.github.io/margino/">
+    <img src="public/icons/paperflow-128.png" width="84" height="84" alt="Margino logo">
   </a>
-  <h1>PaperFlow</h1>
+  <h1>Margino</h1>
   <p><strong>Read where you find papers. Think where you read them.</strong></p>
   <p>A browser-native research workspace for Chrome.</p>
   <p>
@@ -11,7 +11,7 @@
   <p>
     <a href="https://chromewebstore.google.com/detail/paperflow-ai/dffiahjmpkmellmjijffpcofoahbccoc"><strong>Add to Chrome</strong></a>
     &nbsp;&nbsp;·&nbsp;&nbsp;
-    <a href="https://dai0-2.github.io/paperflow/"><strong>Visit website</strong></a>
+    <a href="https://dai0-2.github.io/margino/"><strong>Visit website</strong></a>
     &nbsp;&nbsp;·&nbsp;&nbsp;
     <a href="#build-from-source"><strong>Build from source</strong></a>
   </p>
@@ -21,22 +21,25 @@
     <a href="README.zh-CN.md">简体中文</a>
   </p>
   <p>
-    <a href="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml"><img src="https://github.com/Dai0-2/paperflow/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
+    <a href="https://github.com/Dai0-2/margino/actions/workflows/build.yml"><img src="https://github.com/Dai0-2/margino/actions/workflows/build.yml/badge.svg" alt="Build status"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-202020" alt="Apache 2.0 license"></a>
-    <img src="https://img.shields.io/badge/version-1.0.18-326bd1" alt="Version 1.0.18">
+    <img src="https://img.shields.io/badge/version-1.0.19-326bd1" alt="Version 1.0.19">
     <img src="https://img.shields.io/badge/Chrome-MV3-347556" alt="Chrome Manifest V3">
     <img src="https://img.shields.io/badge/storage-local--first-606460" alt="Local-first storage">
   </p>
 </div>
 
-<a href="https://dai0-2.github.io/paperflow/">
-  <img src="website/assets/paperflow-attention-reader.png" alt="PaperFlow Reader displaying Attention Is All You Need with page thumbnails, annotation tools, and a source-aware assistant">
+> Margino is the new name of PaperFlow. Existing accounts, libraries, and annotations continue to work. Technical identifiers and the Drive folder `PaperFlow` are retained for compatibility.
+
+
+<a href="https://dai0-2.github.io/margino/">
+  <img src="website/assets/margino-reader.png" alt="Margino Reader displaying Attention Is All You Need with page thumbnails, annotation tools, and a source-aware assistant">
 </a>
 
 ## Your PDF is the workspace
 
 Research is often split across a PDF viewer, notes, a detached chatbot, browser
-tabs, and a separate reference manager. PaperFlow brings those parts together
+tabs, and a separate reference manager. Margino brings those parts together
 around the paper itself.
 
 ```text
@@ -54,10 +57,10 @@ position, notes, conversations, and saved context.
 
 ## AI that stays connected to the paper
 
-<img src="website/assets/paperflow-source-stage.png" alt="PaperFlow showing a question, page citation, and the corresponding source passage in the PDF">
+<img src="website/assets/margino-source.png" alt="Margino showing a question, page citation, and the corresponding source passage in the PDF">
 
 Select text, ask a focused question, and receive a concise answer beside the
-document. PaperFlow builds context from the selection, current page, and
+document. Margino builds context from the selection, current page, and
 relevant paper chunks. Structured citations link back to the cited page in the
 Reader.
 
@@ -69,7 +72,7 @@ Reader.
 
 ## Think directly on the paper
 
-<img src="website/assets/paperflow-annotations.png" alt="PaperFlow annotation tools over a research paper">
+<img src="website/assets/margino-annotations.png" alt="Margino annotation tools over a research paper">
 
 Highlight, underline, strike out, write a text note, capture an area, or draw
 with ink. Annotations stay anchored in PDF coordinates, survive zoom changes,
@@ -81,7 +84,7 @@ for papers that need them.
 
 ## Every paper remembers
 
-PaperFlow treats each paper as a long-lived research object rather than a
+Margino treats each paper as a long-lived research object rather than a
 temporary chat session.
 
 | Persistent context | What is retained |
@@ -94,7 +97,7 @@ temporary chat session.
 
 ## Your papers become a research system
 
-<img src="website/assets/paperflow-library-system.png" alt="PaperFlow research library with collections, tags, status, search, and paper details">
+<img src="website/assets/margino-library.png" alt="Margino research library with collections, tags, status, search, and paper details">
 
 The library uses a dense research-table interface designed for scanning and
 repeated work:
@@ -108,11 +111,11 @@ repeated work:
 
 ## Your research stays yours
 
-PaperFlow is local-first. It does not operate a document backend.
+Margino is local-first. It does not operate a document backend.
 
 ```mermaid
 flowchart LR
-    B["Chrome + PaperFlow"] --> L["Local storage<br/>IndexedDB + OPFS"]
+    B["Chrome + Margino"] --> L["Local storage<br/>IndexedDB + OPFS"]
     L -. "optional · encrypted before upload" .-> D["Your Google Drive"]
     B --> H["Local native host"]
     H --> C["ChatGPT Codex<br/>Responses service"]
@@ -125,10 +128,10 @@ flowchart LR
 - Optional Google Drive sync uses the minimum `drive.file` scope and stores
   encrypted objects in the user's own `PaperFlow` folder.
 - Offline PDF backup is separately controlled and disabled by default.
-- PaperFlow does not scrape ChatGPT cookies. In subscription mode, the
+- Margino does not scrape ChatGPT cookies. In subscription mode, the
   open-source Native Host reads the local OAuth credentials created by Codex
   CLI into memory and calls the ChatGPT Codex service directly. The access
-  token never enters the Chrome extension, logs, or PaperFlow storage.
+  token never enters the Chrome extension, logs, or Margino storage.
 - Local OCR has no runtime CDN or remote-code dependency.
 
 Read the [privacy notice](docs/privacy.md), [security policy](SECURITY.md), and
@@ -138,11 +141,11 @@ Read the [privacy notice](docs/privacy.md), [security policy](SECURITY.md), and
 
 ### Core workspace
 
-[Install PaperFlow from the Chrome Web Store](https://chromewebstore.google.com/detail/paperflow-ai/dffiahjmpkmellmjijffpcofoahbccoc).
+[Install Margino from the Chrome Web Store](https://chromewebstore.google.com/detail/paperflow-ai/dffiahjmpkmellmjijffpcofoahbccoc).
 
-PaperFlow supports Chrome 114 or newer on macOS, Windows, and Linux. The
+Margino supports Chrome 114 or newer on macOS, Windows, and Linux. The
 integrated Reader handles local and remote PDFs; arXiv and ScienceDirect PDF
-pages retain their original public address while PaperFlow runs in the page.
+pages retain their original public address while Margino runs in the page.
 
 The Reader, annotations, research library, local storage, and Google Drive sync
 work directly from the extension. They do not require the Native Host.
@@ -153,18 +156,18 @@ AI is optional. Choose exactly one setup:
 
 | Connection | What to install |
 | --- | --- |
-| OpenAI-compatible APIs, including Gemini, Qwen, Kimi, DeepSeek, and others | PaperFlow from the Chrome Web Store only |
-| ChatGPT subscription through Codex | PaperFlow, the official Codex CLI, and the PaperFlow Native Host |
+| OpenAI-compatible APIs, including Gemini, Qwen, Kimi, DeepSeek, and others | Margino from the Chrome Web Store only |
+| ChatGPT subscription through Codex | Margino, the official Codex CLI, and the Margino Native Host |
 
 You can switch either way at any time under **Settings > AI Provider**.
-PaperFlow remembers the API model and Codex model settings separately.
+Margino remembers the API model and Codex model settings separately.
 
 #### Option A: OpenAI-compatible API
 
-Install PaperFlow from the Chrome Web Store, open **Settings > AI Provider**,
+Install Margino from the Chrome Web Store, open **Settings > AI Provider**,
 choose **OpenAI-compatible API**, and enter the Base URL, API key, and model.
 
-PaperFlow works with services that expose an OpenAI-compatible HTTPS endpoint.
+Margino works with services that expose an OpenAI-compatible HTTPS endpoint.
 Select the API format required by the provider and use a model enabled for your
 account:
 
@@ -177,7 +180,7 @@ account:
 | DeepSeek | `https://api.deepseek.com` | Chat Completions |
 
 Provider endpoints and model IDs can change. Use the provider's current
-documentation when configuring PaperFlow. The model menu loads `/models` when
+documentation when configuring Margino. The model menu loads `/models` when
 the provider supports discovery and always accepts a manual model ID.
 
 Do not download a Native Host, clone this repository, install Codex CLI, or
@@ -190,7 +193,7 @@ All three operating systems support ChatGPT subscription mode. End users
 install a prebuilt Native Host and do not need Git, Rust, Cargo, Visual Studio,
 Xcode, or a source build.
 
-1. Install PaperFlow from the Chrome Web Store.
+1. Install Margino from the Chrome Web Store.
 2. Open PowerShell on Windows or a terminal on macOS/Linux and check:
 
    ```bash
@@ -226,9 +229,9 @@ Xcode, or a source build.
 
 5. Download the Native Host for the current operating system:
 
-   - [Windows](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-windows.zip)
-   - [macOS](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-macos.zip)
-   - [Linux](https://github.com/Dai0-2/paperflow/releases/latest/download/paperflow-native-host-linux.zip)
+   - [Windows](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-windows.zip)
+   - [macOS](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-macos.zip)
+   - [Linux](https://github.com/Dai0-2/margino/releases/latest/download/paperflow-native-host-linux.zip)
 
 6. Extract the archive and install:
 
@@ -236,7 +239,7 @@ Xcode, or a source build.
    - macOS: run `bash install-macos.sh` in the extracted folder.
    - Linux: run `sh install-linux.sh` in the extracted folder.
 
-7. Fully close and reopen Chrome. In PaperFlow choose
+7. Fully close and reopen Chrome. In Margino choose
    **ChatGPT subscription > Sign in with ChatGPT**.
 
 After connecting, the model menu reads the models currently available to the
@@ -260,8 +263,8 @@ required after installing from the Chrome Web Store.
 Requirements for the extension: Node.js 20+ and pnpm 10+.
 
 ```bash
-git clone https://github.com/Dai0-2/paperflow.git
-cd paperflow
+git clone https://github.com/Dai0-2/margino.git
+cd margino
 pnpm install
 pnpm build
 ```
@@ -293,13 +296,13 @@ Chrome Manifest V3. The native bridge is written in Rust.
   stepping.
 - Citation clicks navigate to the cited page; precise citation-range
   highlighting is not yet available.
-- PaperFlow currently has no collaboration, vector database, or account/payment
+- Margino currently has no collaboration, vector database, or account/payment
   system.
 
 ## Contributing
 
 For feature requests, configuration questions, or change suggestions, contact
-the author through [GitHub Issues](https://github.com/Dai0-2/paperflow/issues)
+the author through [GitHub Issues](https://github.com/Dai0-2/margino/issues)
 or by email.
 Issues and pull requests are welcome. Start with
 [CONTRIBUTING.md](CONTRIBUTING.md), then review the
@@ -307,6 +310,6 @@ Issues and pull requests are welcome. Start with
 
 ## License
 
-PaperFlow is open source under the [Apache License 2.0](LICENSE). Bundled
+Margino is open source under the [Apache License 2.0](LICENSE). Bundled
 dependencies retain their own licenses; see
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

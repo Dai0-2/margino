@@ -70,10 +70,10 @@ export function ReaderToolbar(props: ReaderToolbarProps) {
     window.open(url, '_blank', 'noopener');
   };
   const libraryTitle = props.libraryState === 'saved'
-    ? text(props.language, 'Manage PaperFlow folders', '管理 PaperFlow 文件夹')
+    ? text(props.language, 'Manage Margino folders', '管理 Margino 文件夹')
     : props.libraryState === 'saving'
-      ? text(props.language, 'Saving to PaperFlow', '正在保存到 PaperFlow')
-      : text(props.language, 'Save to PaperFlow', '保存到 PaperFlow');
+      ? text(props.language, 'Saving to Margino', '正在保存到 Margino')
+      : text(props.language, 'Save to Margino', '保存到 Margino');
   const offlineTitle = props.offlineState === 'available'
     ? text(props.language, 'Stored on this device · available offline', '已保存在本机 · 可断网阅读')
     : props.offlineState === 'saving'
@@ -82,7 +82,7 @@ export function ReaderToolbar(props: ReaderToolbarProps) {
   return <header className="reader-toolbar">
     <div className="reader-toolbar-group reader-document-tools">
       <button title={text(props.language, 'Toggle navigation', '切换导航栏')} aria-label={text(props.language, 'Toggle navigation', '切换导航栏')} data-active={props.sidebarOpen} onClick={props.onSidebarToggle}><PanelLeft /></button>
-      <div className="reader-title" title={props.title}>{props.title || 'PaperFlow Reader'}</div>
+      <div className="reader-title" title={props.title}>{props.title || 'Margino Reader'}</div>
       <button title={text(props.language, 'Open local PDF', '打开本地 PDF')} aria-label={text(props.language, 'Open local PDF', '打开本地 PDF')} onClick={props.onOpenFile}><FolderOpen /></button>
     </div>
     <div className="reader-toolbar-group reader-page-tools">

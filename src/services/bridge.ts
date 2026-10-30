@@ -112,12 +112,12 @@ type HostMode = { kind: 'rust'; status: BridgeResponse } | { kind: 'legacy'; sta
 let hostModePromise: Promise<HostMode> | undefined;
 
 function nativeHostError(message?: string): string {
-  const detail = message || 'Could not connect to the PaperFlow native host.';
+  const detail = message || 'Could not connect to the Margino native host.';
   if (/native messaging host.*not found|specified native messaging host.*not found/i.test(detail)) {
-    return 'PaperFlow Native Host is not installed. Install it from the device-test package, reload the extension, then sign in.';
+    return 'Margino Native Host is not installed. Install it from the device-test package, reload the extension, then sign in.';
   }
   if (/native messaging host.*forbidden|access to the specified native messaging host/i.test(detail)) {
-    return 'Chrome blocked the PaperFlow Native Host because the extension ID does not match. Install the stable-ID device-test build.';
+    return 'Chrome blocked the Margino Native Host because the extension ID does not match. Install the stable-ID device-test build.';
   }
   return detail;
 }
@@ -126,7 +126,7 @@ function parseResponse(response: unknown): BridgeResponse {
   const parsed = bridgeResponseSchema.safeParse(response);
   return parsed.success
     ? parsed.data
-    : { ok: false, error: 'The PaperFlow native host returned an invalid response.' };
+    : { ok: false, error: 'The Margino native host returned an invalid response.' };
 }
 
 function directNativeMessage(payload: LegacyRequest): Promise<BridgeResponse> {
@@ -145,7 +145,7 @@ function directNativeMessage(payload: LegacyRequest): Promise<BridgeResponse> {
 function relayNativeMessage(payload: LegacyRequest): Promise<BridgeResponse> {
   const parsed = nativeRelayPayloadSchema.safeParse(payload);
   if (!parsed.success) {
-    return Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+    return Promise.resolve({ ok: false, error: 'Margino blocked an invalid native-host request.' });
   }
   return new Promise((resolve) => {
     chrome.runtime.sendMessage({
@@ -181,7 +181,7 @@ function nativeMessage(payload: BridgeRequest): Promise<BridgeResponse> {
   const parsed = bridgeRequestSchema.safeParse(payload);
   return parsed.success
     ? nativeMessageUnchecked(parsed.data)
-    : Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+    : Promise.resolve({ ok: false, error: 'Margino blocked an invalid native-host request.' });
 }
 
 function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: BridgeResponse) => void): Promise<BridgeResponse> {
@@ -195,7 +195,7 @@ function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: 
   }
   const parsed = nativeRelayPayloadSchema.safeParse(payload);
   if (!parsed.success) {
-    return Promise.resolve({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+    return Promise.resolve({ ok: false, error: 'Margino blocked an invalid native-host request.' });
   }
   return new Promise((resolve) => {
     let port: chrome.runtime.Port;
@@ -204,7 +204,7 @@ function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: 
         ? chrome.runtime.connectNative(HOST_NAME)
         : chrome.runtime.connect({ name: NATIVE_STREAM_PORT });
     } catch (error) {
-      resolve({ ok: false, error: error instanceof Error ? error.message : 'Could not connect to the PaperFlow native host.' });
+      resolve({ ok: false, error: error instanceof Error ? error.message : 'Could not connect to the Margino native host.' });
       return;
     }
     let settled = false;
@@ -212,7 +212,7 @@ function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: 
     port.onMessage.addListener((message: unknown) => {
       const parsed = parseResponse(message);
       lastEvent = parsed;
-      if (!parsed.ok && parsed.error === 'The PaperFlow native host returned an invalid response.') {
+      if (!parsed.ok && parsed.error === 'The Margino native host returned an invalid response.') {
         settled = true;
         resolve(parsed);
         port.disconnect();
@@ -233,7 +233,7 @@ function nativeStream(payload: BridgeRequest | LegacyRequest, onEvent?: (event: 
       settled = true;
       resolve(lastEvent?.ok === false
         ? lastEvent
-        : { ok: false, error: nativeHostError(chrome.runtime.lastError?.message || 'The PaperFlow native host disconnected before completing the response.') });
+        : { ok: false, error: nativeHostError(chrome.runtime.lastError?.message || 'The Margino native host disconnected before completing the response.') });
     });
     port.postMessage(parsed.data);
   });
@@ -267,7 +267,7 @@ export function registerNativeHostRelay(): void {
       started = true;
       const parsed = nativeRelayPayloadSchema.safeParse(message);
       if (!parsed.success) {
-        postMessage({ ok: false, error: 'PaperFlow blocked an invalid native-host request.' });
+        postMessage({ ok: false, error: 'Margino blocked an invalid native-host request.' });
         port.disconnect();
         return;
       }
@@ -276,7 +276,7 @@ export function registerNativeHostRelay(): void {
       } catch (error) {
         postMessage({
           ok: false,
-          error: error instanceof Error ? error.message : 'Could not connect to the PaperFlow native host.',
+          error: error instanceof Error ? error.message : 'Could not connect to the Margino native host.',
         });
         port.disconnect();
         return;
@@ -289,7 +289,7 @@ export function registerNativeHostRelay(): void {
           ok: false,
           error: nativeHostError(
             chrome.runtime.lastError?.message
-            || 'The PaperFlow native host disconnected before completing the response.',
+            || 'The Margino native host disconnected before completing the response.',
           ),
         });
         port.disconnect();
@@ -305,7 +305,7 @@ async function detectHost(): Promise<HostMode> {
     if (status.protocolVersion > CURRENT_PROTOCOL_VERSION) {
       return {
         kind: 'rust',
-        status: { ok: false, error: 'The PaperFlow native host is newer than this extension. Update the extension.' },
+        status: { ok: false, error: 'The Margino native host is newer than this extension. Update the extension.' },
       };
     }
     return { kind: 'rust', status };
@@ -391,7 +391,7 @@ export async function loginWithChatGPT(): Promise<BridgeResponse> {
 export async function discoverCodexModels(): Promise<BridgeResponse> {
   const host = await hostMode();
   if (host.kind !== 'rust') {
-    return { ok: false, error: 'Update PaperFlow Native Host to load Codex models.' };
+    return { ok: false, error: 'Update Margino Native Host to load Codex models.' };
   }
   if (!host.status.ok) return host.status;
   return nativeMessage({ action: 'codex.models' });

@@ -235,7 +235,7 @@ pub fn auth_status() -> Result<(bool, String), CodexError> {
     match read_credentials() {
         Ok(_) => Ok((
             true,
-            "ChatGPT subscription credentials are available to PaperFlow Native Host.".to_owned(),
+            "ChatGPT subscription credentials are available to Margino Native Host.".to_owned(),
         )),
         Err(CodexError::MissingCredentials | CodexError::InvalidCredentials) => Ok((
             false,
@@ -636,7 +636,7 @@ translation without commentary, quotation marks, or Markdown fences.",
         )
     } else {
         format!(
-            "You are PaperFlow, a precise research-paper reading assistant. Use only the supplied \
+            "You are Margino, a precise research-paper reading assistant. Use only the supplied \
 paper context and be explicit when it is insufficient. Do not use tools, inspect local files, \
 run commands, or change the computer. Answer in {}. Cite factual claims from the supplied \
 paper as [Page N], and never invent page numbers. For math, use only $...$ for inline formulas \

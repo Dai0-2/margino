@@ -161,7 +161,7 @@ export function SaveToLibraryDialog(props: {
       <header>
         <div>
           <h2 id="save-library-title">
-            {text(props.language, 'Save to PaperFlow', '保存到 PaperFlow')}
+            {text(props.language, 'Save to Margino', '保存到 Margino')}
           </h2>
           <p title={props.paperTitle}>{props.paperTitle}</p>
         </div>

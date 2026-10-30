@@ -8,9 +8,9 @@ Do not commit or share:
 - OAuth access or refresh tokens
 - `~/.codex/auth.json`
 - Chrome profile data or ChatGPT cookies
-- private paper content or exported PaperFlow databases
+- private paper content or exported Margino databases
 
-PaperFlow does not use private ChatGPT web endpoints or simulate `chatgpt.com` sessions. ChatGPT subscription access uses the official Codex CLI through a local Native Messaging host; credentials remain outside the extension. API keys are stored in macOS Keychain, Windows Credential Manager, or Linux Secret Service and are never returned to extension storage.
+Margino does not use private ChatGPT web endpoints or simulate `chatgpt.com` sessions. ChatGPT subscription access uses the official Codex CLI through a local Native Messaging host; credentials remain outside the extension. API keys are stored in macOS Keychain, Windows Credential Manager, or Linux Secret Service and are never returned to extension storage.
 
 ## PDF and extension permissions
 
@@ -18,7 +18,7 @@ PaperFlow does not use private ChatGPT web endpoints or simulate `chatgpt.com` s
 - Local PDFs are opened only after a file-picker action.
 - PDF pages and extracted text stay local unless the user sends bounded context to the selected AI provider.
 - The default direct-PDF redirect is opt-in and can be disabled in Settings.
-- PaperFlow does not inspect or modify another PDF extension's internal DOM.
+- Margino does not inspect or modify another PDF extension's internal DOM.
 
 ## Local persistence
 
@@ -49,14 +49,14 @@ PDFs and explicit metadata/API requests, not for loading executable code.
 
 - Google authorization uses Chrome Identity and only the `drive.file` scope. OAuth tokens remain under Chrome's control and are never written to IndexedDB, OPFS, `localStorage`, Drive, logs, or exports.
 - Development builds without `PAPERFLOW_GOOGLE_OAUTH_CLIENT_ID` remain loadable but show sync as unconfigured. Release builds fail when the client ID is missing.
-- PaperFlow creates a visible `PaperFlow` folder. Its readable sync header contains the protocol version, sync UUID, key-management mode, and account-managed encryption key material.
+- Margino creates a visible `PaperFlow` folder. Its readable sync header contains the protocol version, sync UUID, key-management mode, and account-managed encryption key material.
 - Business objects use independent random keys and chunked AES-256-GCM. AAD binds the sync UUID, protocol version, object type, logical ID, and chunk index.
 - Drive object names are HMAC-derived opaque IDs. Titles, authors, DOI values, notes, conversations, PDF bytes, and logical IDs are not used as Drive file names or metadata.
 - Operation batches and snapshots are immutable encrypted objects. Their Drive metadata contains only protocol classification and random identifiers, never paper IDs, titles, DOI values, note text, or attachment names.
 - PDF backup is off by default. When enabled, uploads use resumable sessions. IndexedDB checkpoints may contain the resumable session URL, byte offset, and encrypted chunk hash, but never OAuth tokens or plaintext PDF data.
 - Replayed operation IDs are idempotent. Concurrent note edits preserve a conflict copy instead of silently overwriting user text.
-- Account-managed encryption prevents ordinary Drive browsing from exposing content, but it is not a zero-knowledge boundary: access to the Google account and all PaperFlow-created files is sufficient to restore synchronized data.
-- Legacy password and recovery-key headers are accepted only for one-time migration. After a successful unlock, PaperFlow replaces the legacy header while preserving the sync UUID and historical encrypted objects.
+- Account-managed encryption prevents ordinary Drive browsing from exposing content, but it is not a zero-knowledge boundary: access to the Google account and all Margino-created files is sufficient to restore synchronized data.
+- Legacy password and recovery-key headers are accepted only for one-time migration. After a successful unlock, Margino replaces the legacy header while preserving the sync UUID and historical encrypted objects.
 
 ## Native bridge
 
@@ -69,7 +69,7 @@ closed. Logs must exclude API keys, sync keys, legacy recovery keys,
 authentication tokens, private document text, and unredacted local paths.
 
 Linux API-key persistence is disabled when Secret Service is unavailable;
-PaperFlow never falls back to a plaintext credential file.
+Margino never falls back to a plaintext credential file.
 
 ## Reporting a vulnerability
 

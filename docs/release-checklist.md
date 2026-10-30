@@ -1,4 +1,4 @@
-# PaperFlow AI v1.0 Release Checklist
+# Margino v1.0 Release Checklist
 
 This checklist separates repository validation from external publication work.
 Do not mark an external item complete without evidence from the relevant
@@ -6,7 +6,7 @@ account, device, or signing service.
 
 ## Repository gate
 
-- [x] `package.json` and generated manifest use `1.0.18`.
+- [x] `package.json` and generated manifest use `1.0.19`.
 - [x] TypeScript strict check passes.
 - [x] Unit and integration tests pass.
 - [x] Chromium E2E suite passes for Side Panel-sized UI, Reader, Library,

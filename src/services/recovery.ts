@@ -29,7 +29,7 @@ export async function exportRawDatabase(
   if ('databases' in indexedDB) {
     const databases = await indexedDB.databases();
     if (!databases.some((database) => database.name === databaseName)) {
-      throw new Error('No PaperFlow database was found in this browser profile.');
+      throw new Error('No Margino database was found in this browser profile.');
     }
   }
 

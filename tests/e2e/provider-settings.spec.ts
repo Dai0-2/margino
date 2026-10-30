@@ -9,7 +9,7 @@ test('shows an actionable device login guide when the native host is unavailable
   await expect(page.getByText('Extension ID needs attention')).toBeVisible();
   await expect(page.getByText('dffiahjmpkmellmjijffpcofoahbccoc')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Extension settings' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'PaperFlow settings' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Margino settings' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Copy Codex commands' })).toBeVisible();
 });
 

@@ -43,7 +43,7 @@ function yearValue(value: unknown): string | undefined {
 async function requestPermission(originPattern: string): Promise<void> {
   if (typeof chrome === 'undefined' || !chrome.permissions?.request) return;
   const granted = await chrome.permissions.request({ origins: [originPattern] });
-  if (!granted) throw new Error('PaperFlow needs temporary access to the metadata provider.');
+  if (!granted) throw new Error('Margino needs temporary access to the metadata provider.');
 }
 
 async function refreshCrossref(doi: string, fetcher: typeof fetch): Promise<MetadataPatch> {

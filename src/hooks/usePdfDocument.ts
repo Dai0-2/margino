@@ -295,7 +295,7 @@ export function usePdfDocument() {
             'Chrome is blocking local files. Open extension settings and enable “Allow access to file URLs”.',
             'Chrome 正在阻止本地文件。请打开扩展设置并开启“允许访问文件网址”。',
           )
-          : text(uiLanguage, 'PaperFlow needs access to this PDF host before it can load the document.', 'PaperFlow 需要获得此 PDF 来源的访问权限才能加载文档。'));
+          : text(uiLanguage, 'Margino needs access to this PDF host before it can load the document.', 'Margino 需要获得此 PDF 来源的访问权限才能加载文档。'));
         return;
       }
       setPendingUrl('');
@@ -324,8 +324,8 @@ export function usePdfDocument() {
       openExtensionSettings();
       setError(text(
         uiLanguage,
-        'Enable “Allow access to file URLs” in Chrome, then return to PaperFlow. The PDF will open automatically.',
-        '请在 Chrome 中开启“允许访问文件网址”，然后返回 PaperFlow，PDF 会自动打开。',
+        'Enable “Allow access to file URLs” in Chrome, then return to Margino. The PDF will open automatically.',
+        '请在 Chrome 中开启“允许访问文件网址”，然后返回 Margino，PDF 会自动打开。',
       ));
       return;
     }
@@ -369,8 +369,8 @@ export function usePdfDocument() {
       if (warning === 'pdf-handler-conflict') {
         setError(text(
           uiLanguage,
-          'PaperFlow stopped a possible PDF-handler redirect loop. Disable one default PDF handler, then use the Side Panel or open this URL manually.',
-          'PaperFlow 已停止可能的 PDF 接管循环。请关闭其中一个默认 PDF 接管器，然后使用 Side Panel，或手动打开此链接。',
+          'Margino stopped a possible PDF-handler redirect loop. Disable one default PDF handler, then use the Side Panel or open this URL manually.',
+          'Margino 已停止可能的 PDF 接管循环。请关闭其中一个默认 PDF 接管器，然后使用 Side Panel，或手动打开此链接。',
         ));
         return;
       }

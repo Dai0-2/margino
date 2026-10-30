@@ -7,7 +7,7 @@ async function createFixture(path: string): Promise<void> {
   const page = document.addPage([612, 792]);
   const font = await document.embedFont(StandardFonts.Helvetica);
   for (let line = 0; line < 24; line += 1) {
-    page.drawText(`PaperFlow focus line ${line + 1}`, {
+    page.drawText(`Margino focus line ${line + 1}`, {
       x: 72,
       y: 720 - line * 25,
       size: 12,

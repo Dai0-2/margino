@@ -56,17 +56,17 @@ function configureExtension(): void {
     chrome.contextMenus.removeAll(() => {
       chrome.contextMenus.create({
         id: OPEN_READER_MENU,
-        title: chinese ? '使用 PaperFlow 打开' : 'Open with PaperFlow',
+        title: chinese ? '使用 Margino 打开' : 'Open with Margino',
         contexts: ['link', 'page'],
       });
       chrome.contextMenus.create({
         id: SAVE_PAPER_MENU,
-        title: chinese ? '保存到 PaperFlow' : 'Save to PaperFlow',
+        title: chinese ? '保存到 Margino' : 'Save to Margino',
         contexts: ['link', 'page'],
       });
       chrome.contextMenus.create({
         id: OPEN_LIBRARY_MENU,
-        title: chinese ? '打开 PaperFlow 资料库' : 'Open PaperFlow Library',
+        title: chinese ? '打开 Margino 资料库' : 'Open Margino Library',
         contexts: ['action', 'page'],
       });
     });

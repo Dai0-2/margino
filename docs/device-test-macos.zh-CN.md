@@ -1,4 +1,4 @@
-# PaperFlow AI macOS 跨设备测试
+# Margino macOS 跨设备测试
 
 此包用于 Apple Silicon Mac。扩展目录包含固定扩展 ID 和 Google Drive OAuth 配置；Native Host 仅用于 ChatGPT/Codex 登录。OpenAI 兼容 API 由扩展直连，不需要 Host。
 
@@ -24,10 +24,10 @@ bash native-host-macos/install-macos.sh
 
 ## 3. 登录
 
-- Google 同步：打开 PaperFlow 设置，点击“使用 Google 账号登录”。
-- ChatGPT：先确认 `codex --version` 可运行，再执行 `codex login` 并完成官方浏览器授权。PaperFlow Native Host 会使用该本机凭据直连 Codex Responses 服务，不会启动用户的 MCP、插件或工具，也不会将访问令牌发送给扩展。
+- Google 同步：打开 Margino 设置，点击“使用 Google 账号登录”。
+- ChatGPT：先确认 `codex --version` 可运行，再执行 `codex login` 并完成官方浏览器授权。Margino Native Host 会使用该本机凭据直连 Codex Responses 服务，不会启动用户的 MCP、插件或工具，也不会将访问令牌发送给扩展。
 
-可随时在 PaperFlow 的“设置 > AI 服务”中切换 ChatGPT 订阅与 OpenAI 兼容 API；
+可随时在 Margino 的“设置 > AI 服务”中切换 ChatGPT 订阅与 OpenAI 兼容 API；
 两种模式会分别保留自己的模型设置。
 
-完成安装或更新后，在 `chrome://extensions` 中重新加载 PaperFlow。
+完成安装或更新后，在 `chrome://extensions` 中重新加载 Margino。

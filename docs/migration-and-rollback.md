@@ -2,7 +2,7 @@
 
 ## Upgrade from v0.7.0
 
-PaperFlow v1.0 opens the existing `paperflow-ai` IndexedDB database and applies
+Margino v1.0 opens the existing `paperflow-ai` IndexedDB database and applies
 ordered Dexie schema migrations. The v1-to-v2 upgrade first copies all legacy
 stores into `migrationBackups/v1-pre-upgrade` within the same IndexedDB upgrade
 transaction. It then adds local-library fields and version metadata. If any
@@ -36,7 +36,7 @@ the original PDF files separately.
 
 ## Rollback policy
 
-PaperFlow does not downgrade IndexedDB schemas. Installing v0.7.0 over a profile
+Margino does not downgrade IndexedDB schemas. Installing v0.7.0 over a profile
 that has opened v1.0 may produce a database `VersionError` or cause the old code
 to misinterpret records.
 
@@ -57,4 +57,4 @@ client to overwrite them.
 A fresh profile creates the latest schema directly and has no `v1-pre-upgrade`
 backup because there is no legacy data. To recover an existing library, connect
 the same Google account. A legacy password/recovery header requires one
-successful unlock before PaperFlow upgrades it to account-managed sync.
+successful unlock before Margino upgrades it to account-managed sync.
