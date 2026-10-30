@@ -31,7 +31,7 @@
 
 
 <a href="https://dai0-2.github.io/margino/">
-  <img src="website/assets/margino-reader.png" alt="Margino Reader 正在显示 Attention Is All You Need，包含页面缩略图、批注工具与溯源助手">
+  <img src="website/assets/margino-reader.jpg" alt="Margino Reader 正在显示 Attention Is All You Need，包含页面缩略图、批注工具与溯源助手">
 </a>
 
 ## 让 PDF 成为工作区
@@ -53,7 +53,7 @@ Paper
 
 ## 始终连接原文的 AI
 
-<img src="website/assets/margino-source.png" alt="Margino 展示问题、页码引用以及 PDF 中对应的原文位置">
+<img src="website/assets/margino-source.jpg" alt="Margino 展示问题、页码引用以及 PDF 中对应的原文位置">
 
 划选文字、提出具体问题，并在文档旁获得简洁回答。Margino 会结合选中文字、当前页与
 论文相关片段构建上下文，结构化 Citation 可直接跳转到 Reader 中的引用页。
@@ -66,7 +66,7 @@ Paper
 
 ## 直接在论文上思考
 
-<img src="website/assets/margino-annotations.png" alt="Margino 在论文原文上提供批注工具">
+<img src="website/assets/margino-annotations.jpg" alt="Margino 在论文原文上提供批注工具">
 
 支持高亮、下划线、删除线、文本笔记、区域批注和手写。所有批注使用 PDF 坐标锚定，
 缩放后仍能保持位置，并会随论文一起重新打开。
@@ -88,7 +88,7 @@ Margino 将论文视为长期存在的研究对象，而不是一次性的聊天
 
 ## 让论文形成研究系统
 
-<img src="website/assets/margino-library.png" alt="Margino 研究资料库，包含集合、标签、阅读状态、搜索与论文详情">
+<img src="website/assets/margino-library.jpg" alt="Margino 研究资料库，包含集合、标签、阅读状态、搜索与论文详情">
 
 资料库采用适合扫描、比较和重复操作的高密度研究表格：
 

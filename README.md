@@ -33,7 +33,7 @@
 
 
 <a href="https://dai0-2.github.io/margino/">
-  <img src="website/assets/margino-reader.png" alt="Margino Reader displaying Attention Is All You Need with page thumbnails, annotation tools, and a source-aware assistant">
+  <img src="website/assets/margino-reader.jpg" alt="Margino Reader displaying Attention Is All You Need with page thumbnails, annotation tools, and a source-aware assistant">
 </a>
 
 ## Your PDF is the workspace
@@ -57,7 +57,7 @@ position, notes, conversations, and saved context.
 
 ## AI that stays connected to the paper
 
-<img src="website/assets/margino-source.png" alt="Margino showing a question, page citation, and the corresponding source passage in the PDF">
+<img src="website/assets/margino-source.jpg" alt="Margino showing a question, page citation, and the corresponding source passage in the PDF">
 
 Select text, ask a focused question, and receive a concise answer beside the
 document. Margino builds context from the selection, current page, and
@@ -72,7 +72,7 @@ Reader.
 
 ## Think directly on the paper
 
-<img src="website/assets/margino-annotations.png" alt="Margino annotation tools over a research paper">
+<img src="website/assets/margino-annotations.jpg" alt="Margino annotation tools over a research paper">
 
 Highlight, underline, strike out, write a text note, capture an area, or draw
 with ink. Annotations stay anchored in PDF coordinates, survive zoom changes,
@@ -97,7 +97,7 @@ temporary chat session.
 
 ## Your papers become a research system
 
-<img src="website/assets/margino-library.png" alt="Margino research library with collections, tags, status, search, and paper details">
+<img src="website/assets/margino-library.jpg" alt="Margino research library with collections, tags, status, search, and paper details">
 
 The library uses a dense research-table interface designed for scanning and
 repeated work:
