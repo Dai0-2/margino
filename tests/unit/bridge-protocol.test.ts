@@ -333,6 +333,52 @@ describe('native host protocol', () => {
     expect(actions).toEqual(['status', 'status', 'codex.auth_status']);
   });
 
+  it.each([
+    { ok: false, error: 'Host not found' },
+    { ok: true, protocolVersion: 1, codexAvailable: false },
+  ])('re-detects the host on sign-in after a failed check: %j', async (initial) => {
+    const actions: string[] = [];
+    const responses = [
+      initial,
+      { ok: true, protocolVersion: 1, codexAvailable: true },
+      { ok: true, authenticated: true },
+    ];
+    vi.stubGlobal('chrome', {
+      runtime: {
+        sendNativeMessage: (
+          _host: string,
+          payload: { action: string },
+          callback: (response: unknown) => void,
+        ) => {
+          actions.push(payload.action);
+          callback(responses.shift());
+        },
+      },
+    });
+    expect((await getBridgeStatus()).ok).toBe(false);
+    expect((await loginWithChatGPT()).authenticated).toBe(true);
+    expect(actions).toEqual(['status', 'status', 'codex.auth_status']);
+  });
+
+  it('does not send legacy login after a failed native-host probe', async () => {
+    const actions: string[] = [];
+    vi.stubGlobal('chrome', {
+      runtime: {
+        sendNativeMessage: (
+          _host: string,
+          payload: { action: string },
+          callback: (response: unknown) => void,
+        ) => {
+          actions.push(payload.action);
+          callback({ ok: false, error: 'Host not found' });
+        },
+      },
+    });
+    expect((await loginWithChatGPT()).ok).toBe(false);
+    expect((await loginWithChatGPT()).ok).toBe(false);
+    expect(actions).toEqual(['status', 'status']);
+  });
+
   it('turns Chrome native-host failures into installation guidance', async () => {
     vi.stubGlobal('chrome', {
       runtime: {
@@ -346,7 +392,7 @@ describe('native host protocol', () => {
     });
 
     const result = await getBridgeStatus();
-    expect(result.error).toContain('Native Host is not installed');
-    expect(result.error).toContain('device-test package');
+    expect(result.error).toContain('could not find the Margino Native Host');
+    expect(result.error).toContain('GitHub Releases');
   });
 });

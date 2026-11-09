@@ -1,7 +1,14 @@
+param(
+    [string]$InstallDir = ""
+)
+
 $ErrorActionPreference = "Stop"
 
 $HostName = "com.paperflow.ai"
-$RuntimeDirectory = Join-Path $env:LOCALAPPDATA "PaperFlow AI"
+if ([string]::IsNullOrWhiteSpace($InstallDir)) {
+    $InstallDir = Join-Path $env:LOCALAPPDATA "PaperFlow AI"
+}
+$RuntimeDirectory = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($InstallDir)
 $RegistryPath = "HKCU:\Software\Google\Chrome\NativeMessagingHosts\$HostName"
 
 if (Test-Path $RegistryPath) {

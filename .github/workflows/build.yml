@@ -10,6 +10,17 @@ permissions:
   contents: read
 
 jobs:
+  windows-installer:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        shell: [powershell, pwsh]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Windows installer paths and registration
+        shell: ${{ matrix.shell }}
+        run: ./native-host/tests/install-windows.test.ps1
+
   build:
     runs-on: ubuntu-latest
     steps:

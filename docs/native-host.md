@@ -92,6 +92,49 @@ Extract the archive. On Windows, double-click `INSTALL-PAPERFLOW.cmd`. On macOS,
 run `bash install-macos.sh`; on Linux, run `sh install-linux.sh`. These packages
 include the compiled Host and do not require Rust or platform compiler tools.
 
+### Windows: installed, but Chrome cannot find the Host
+
+See [issue #5](https://github.com/Dai0-2/margino/issues/5). Running the installer
+inside a packaged application such as Codex can redirect writes under
+`LOCALAPPDATA` to that application's private storage. `Test-Path` and a direct
+Host invocation from that environment can succeed while Chrome cannot find the
+registered manifest. This is not necessarily a ChatGPT authentication problem.
+
+First try running `INSTALL-PAPERFLOW.cmd` from Windows File Explorer, outside
+Codex. For a custom directory, use the **updated installer in main** (the older
+v1.0.19 release installer does not support `-InstallDir` yet):
+
+1. Download the Windows Native Host ZIP above and extract it.
+2. Download [install-windows.ps1](https://raw.githubusercontent.com/Dai0-2/margino/main/native-host/install/install-windows.ps1)
+   and replace the script in the extracted folder. Review the script before running it.
+3. Open a standalone Windows PowerShell in that folder, not a terminal inside Codex.
+4. Choose a persistent directory you can write to, then run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install-windows.ps1 -InstallDir "$env:USERPROFILE\MarginoNativeHost"
+```
+
+The new installer checks the executable and manifest with Windows
+`GetFinalPathNameByHandle` **before changing the registry**. If either physical
+path differs, it stops and prints both paths; choose a non-redirected location
+and retry. It conservatively rejects junction/symlink paths too. Do not move or
+delete the installation directory afterward. Matching paths do not prove Chrome
+connectivity or override filesystem permissions: verify the connection in Chrome.
+
+Reload the extension at `chrome://extensions`, refresh the paper tab, then select
+**ChatGPT subscription > Sign in**. The updated extension in main rechecks the Host
+on every sign-in attempt; older extensions may need a page reload after repair.
+Do not uninstall the extension or reset your ChatGPT credentials for this issue.
+API mode requires no Native Host.
+
+To uninstall a custom installation, download the updated
+[uninstall-windows.ps1](https://raw.githubusercontent.com/Dai0-2/margino/main/native-host/install/uninstall-windows.ps1)
+and use the same path:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\uninstall-windows.ps1 -InstallDir "$env:USERPROFILE\MarginoNativeHost"
+```
+
 ## Build from source
 
 ```bash

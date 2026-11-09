@@ -114,7 +114,7 @@ let hostModePromise: Promise<HostMode> | undefined;
 function nativeHostError(message?: string): string {
   const detail = message || 'Could not connect to the Margino native host.';
   if (/native messaging host.*not found|specified native messaging host.*not found/i.test(detail)) {
-    return 'Margino Native Host is not installed. Install it from the device-test package, reload the extension, then sign in.';
+    return 'Chrome could not find the Margino Native Host. Install or repair it using the Native Host package from GitHub Releases, then retry sign-in. On Windows, check the registered manifest path if it is already installed.';
   }
   if (/native messaging host.*forbidden|access to the specified native messaging host/i.test(detail)) {
     return 'Chrome blocked the Margino Native Host because the extension ID does not match. Install the stable-ID device-test build.';
@@ -363,9 +363,9 @@ export async function getBridgeStatus(): Promise<BridgeResponse> {
 }
 
 export async function loginWithChatGPT(): Promise<BridgeResponse> {
-  const host = await hostMode();
-  if (host.kind === 'legacy') return nativeMessageUnchecked({ action: 'login' });
+  const host = await refreshHostMode();
   if (!host.status.ok) return host.status;
+  if (host.kind === 'legacy') return nativeMessageUnchecked({ action: 'login' });
   if (!host.status.codexAvailable) {
     return {
       ok: false,
