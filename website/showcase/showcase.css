@@ -1777,3 +1777,31 @@ body[data-recording="true"] .debug-controls {
     transition: none !important;
   }
 }
+
+/* Legible demo typography. DOM embeds rasterize at the display's own pixel density. */
+.question-message p{font-size:18px}
+.answer-message>p{font-size:18px;line-height:1.5}
+.answer-message h4{font-size:23px}
+.answer-message>small{font-size:11px;color:#656e65}
+.citation-button{font-size:14px;height:32px}
+body[data-embed] .scene-caption{display:none}
+body[data-embed] .reader-window,body[data-embed] .library-window{transform:none!important;box-shadow:none}
+body[data-embed=source] .answer-message>p{font-size:22px;line-height:1.45}
+body[data-embed=source] .question-message p{font-size:20px}
+body[data-embed=source] .citation-button{font-size:16px;height:35px}
+body[data-embed=memory] .memory-summary p,
+body[data-embed=memory] .memory-view li,
+body[data-embed=memory] .saved-note p,
+body[data-embed=memory] .previous-question{font-size:18px;line-height:1.5}
+body[data-embed=memory] .memory-summary span,
+body[data-embed=memory] .memory-view section h4,
+body[data-embed=memory] .saved-note small{font-size:12px;color:#616b61}
+body[data-embed=memory] .memory-view>header strong{font-size:18px}
+body[data-embed=library] .paper-row{font-size:16px}
+body[data-embed=library] .paper-row b{font-size:18px}
+body[data-embed=library] .paper-row small{font-size:13px;color:#657065}
+body[data-embed=library] .paper-row.table-head{font-size:13px}
+body[data-embed=library] .status{font-size:12px}
+body[data-embed=library] .library-sidebar button{font-size:15px}
+body[data-embed=library] .library-search{font-size:15px}
+body[data-embed=annotation] .annotation-note p{font-size:18px}

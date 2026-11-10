@@ -1,67 +1,61 @@
-# Margino marketing site
+# Margino marketing site — sharp rendering
 
-The GitHub Pages homepage is a buildless HTML/CSS/JavaScript site in `website/`.
-The cinematic refresh keeps the extension, privacy page, technical identifiers,
-and existing Chrome Web Store destination unchanged.
+The GitHub Pages homepage is buildless HTML/CSS/JavaScript in `website/`.
+Preview: `python3 -m http.server 4188 --bind 127.0.0.1 --directory website`.
+The Pages workflow deploys this directory on main pushes.
 
-## Preview
+## Resolution-independent product demos
 
-From the repository root:
+The homepage does **not** use the old compressed MP4s or a scaled screenshot for
+its reader, source AI, annotations, Paper Memory or library surfaces. These are
+same-origin HTML demo frames using `showcase/?embed=reader` (or `source`,
+`annotation`, `memory`, `library`). Browser-rendered text, formulas and controls
+rasterize at the visitor's display density. Reader answers have larger type.
+Each surface offers a full-size link; small screens cannot make a complete
+research interface legible at thumbnail size, so full-size inspection is useful.
+
+The demo is illustrative, not a live extension session. No accounts, private
+papers, API requests or user research data are involved. Demo controls are inert;
+playback is controlled from the parent. PostMessage checks both source and origin.
+Animation pauses offscreen, in background, when motion is disabled, or while the
+film is open. Paused embeds stop their animation-frame loop. The library is static
+DOM, with local horizontal scrolling on narrow screens. No-JavaScript visitors
+receive static preview images rather than blank frames.
+
+## Full film
+
+The separate film is `assets/motion/film-4k.mp4`: 3840×2160, 24 fps, 28 seconds,
+H.264/yuv420p, CRF 14, faststart, no audio. It is recorded at original 4K dimensions,
+not upscaled from the previous 1080p export. The 4K JPEG poster is copied directly
+from a captured frame. The film loads only when requested.
+
+For deterministic capture, open `showcase/?scene=1&recording=1&capture=1` at
+3840×2160. Enter frame * 1000 / 24 into the numeric `Recording timestamp` control
+and capture frames 0000.jpg–0671.jpg. Use full-page screenshots: viewport-only
+capture can crop the right edge in some browser backends. Verify actual file
+dimensions, not merely `window.innerWidth`.
+
+Encode once from original frames:
 
 ```sh
-python3 -m http.server 4188 --bind 127.0.0.1 --directory website
+FFMPEG_PATH=/path/to/ffmpeg pnpm site:film4k /path/to/frames
 ```
 
-Open `http://127.0.0.1:4188/`. The Pages workflow deploys `website/` on main pushes.
+The encoder checks native 4K input and missing frames, and does not upscale.
+The older `pnpm promo` / `pnpm site:media` exports remain available for legacy
+1080p files, but are not the current homepage's visual source.
 
-## Design and motion
+## Preserved behavior
 
-- White and textured light-gray surfaces, local Inter fonts, restrained blue CTA.
-- A reader clip in the hero, three keyboard-accessible feature tabs, and a
-  separate 28-second product film in a native dialog.
-- One sticky paper/workspace consolidation, driven by scroll position and CSS
-  transforms. Mobile and reduced-motion layouts remain ordinary document flow.
-- Videos load when visible, pause offscreen/in background/while the film is open,
-  and have explicit playback controls. Posters remain usable without JavaScript.
-- The system's reduced-motion preference disables automatic playback. The footer
-  also lets visitors pause motion; explicit video play remains available.
-- Library tables retain readable width with local horizontal scrolling on mobile.
+- Local fonts, white/paper-textured surfaces, bilingual copy, same brand and links.
+- One scroll-driven paper/workspace scene, with a simple mobile layout.
+- System reduced-motion preference plus explicit pause and per-demo controls.
+- Existing privacy page, Chrome Web Store destination and extension functionality.
 
-`cinema.js` owns the page interactions; `cinema.css` owns the new visual system.
-The old landing files remain for historical reuse, but are not loaded by the homepage.
+## QA
 
-## Rebuild media
-
-The clips are **illustrative product demonstrations** from the existing showcase,
-not a live recording of a user's library or a response-speed benchmark. No
-third-party SuperMimic media is reused. AI provider/model availability varies.
-
-```sh
-pnpm promo
-# Requires ffmpeg on PATH, or FFMPEG_PATH=/absolute/path/to/ffmpeg:
-pnpm site:media
-```
-
-`site:media` consumes `artifacts/paperflow-promo.mp4`; an alternative master file
-can be passed directly to `node scripts/prepare-site-media.mjs /path/to/master.mp4`.
-It creates the complete film, reader, source, annotation and memory clips plus
-JPEG posters in `website/assets/motion/`. H.264/yuv420p, faststart, no audio.
-Keep filenames stable or update all corresponding posters and dynamic sources.
-
-For exact-frame capture, `showcase/?scene=1&recording=1&capture=1` exposes a tiny
-numeric input labelled `Recording timestamp`. Enter milliseconds through normal
-browser input, then capture the 1920×1080 viewport. This bypasses wall-clock timing;
-the shipped master was captured at 24 fps for 28 seconds.
-
-## Validation of the refresh
-
-- Browser checks at 1920×1080, 1440px desktop and 390×844 mobile: no page-level
-  horizontal overflow; local library scrolling is intentional.
-- Feature switching, English/Chinese toggle, playback, full-film modal,
-  background-video pause and footer reduced-motion mode checked in the browser.
-- Full film decoded and played in browser: 28 seconds. JavaScript syntax and
-  local asset/anchor checks passed.
-- The exact operating-system reduced-motion setting was not changed during QA;
-  the shared reduced-motion behavior was exercised with the footer control.
-- Mobile uses the same lightweight clips rather than separately directed mobile
-  footage. Full-reader text is small on a phone; feature close-ups provide detail.
+Check desktop and mobile overflow, native frame crop boundaries, legibility,
+feature switching, play/pause, page visibility, reduced-motion controls,
+full-size links and film playback. Inspect the standalone frame to confirm the
+content is HTML text, not merely a higher-resolution bitmap. Screenshots saved
+under ignored `outputs/` are QA evidence, not production assets.

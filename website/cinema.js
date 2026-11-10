@@ -21,7 +21,7 @@ const featureCopy = {
 };
 let selected = 'source';
 const panel = document.querySelector('#highlight-panel');
-const featureMedia = panel.querySelector('video');
+const featureMedia = panel.querySelector('iframe');
 const tabs = [...document.querySelectorAll('[data-feature]')];
 function updateFeatureCopy() {
   const d = featureCopy[selected], i = language === 'zh' ? 1 : 0;
@@ -44,33 +44,30 @@ document.querySelector('.language-switch').addEventListener('click', () => {
 });
 const mediaStates = new Map();
 const film = document.querySelector('.film-dialog');
-function loadVideo(video) { if (!video.getAttribute('src')) { video.src = video.dataset.src; video.load(); } }
-function paintPlayback(video, button) {
-  button.textContent = video.paused ? '▶' : 'Ⅱ';
-  button.setAttribute('aria-label', video.paused ? 'Play video' : 'Pause video');
-}
-function syncVideo(video) {
-  const state = mediaStates.get(video);
+function syncVideo(frame) {
+  const state = mediaStates.get(frame);
   const wanted = state.manual === true || (!prefersReduced() && state.manual !== false);
-  if (!state.visible || document.hidden || film.open || !wanted) { video.pause(); return; }
-  loadVideo(video);
-  video.play().catch(() => { paintPlayback(video, state.button); });
+  state.playing = state.visible && !document.hidden && !film.open && wanted;
+  frame.contentWindow?.postMessage({ type:'margino:demo-playback', playing:state.playing }, location.origin);
+  state.button.textContent = state.playing ? 'Ⅱ' : '▶';
+  state.button.setAttribute('aria-label', state.playing ? 'Pause demonstration' : 'Play demonstration');
 }
 for (const wrapper of document.querySelectorAll('[data-media]')) {
-  const video = wrapper.querySelector('video'), button = wrapper.querySelector('.media-toggle');
-  mediaStates.set(video, { visible: false, manual: null, button });
-  button.addEventListener('click', () => { mediaStates.get(video).manual = video.paused; syncVideo(video); });
-  video.addEventListener('play', () => paintPlayback(video, button));
-  video.addEventListener('pause', () => paintPlayback(video, button));
-  video.addEventListener('error', () => { wrapper.querySelector('.media-error').hidden = false; });
-  video.addEventListener('loadeddata', () => { wrapper.querySelector('.media-error').hidden = true; });
+  const frame = wrapper.querySelector('iframe'), button = wrapper.querySelector('.media-toggle');
+  mediaStates.set(frame, { visible:false, manual:null, playing:false, button });
+  button.addEventListener('click', () => { const state = mediaStates.get(frame); state.manual = !state.playing; syncVideo(frame); });
+  frame.addEventListener('load', () => syncVideo(frame));
 }
+addEventListener('message', event => {
+  if (event.origin !== location.origin || event.data?.type !== 'margino:demo-ready') return;
+  for (const [frame] of mediaStates) if (frame.contentWindow === event.source) syncVideo(frame);
+});
 if ('IntersectionObserver' in window) {
   const observer = new IntersectionObserver(entries => {
     for (const entry of entries) { mediaStates.get(entry.target).visible = entry.isIntersecting; syncVideo(entry.target); }
-  }, {threshold: .15});
-  mediaStates.forEach((_, video) => observer.observe(video));
-} else { mediaStates.forEach((state) => { state.visible = true; }); }
+  }, {threshold:.15});
+  mediaStates.forEach((_, frame) => observer.observe(frame));
+} else { mediaStates.forEach(state => { state.visible = true; }); }
 function syncAll() { mediaStates.forEach((_, video) => syncVideo(video)); }
 document.addEventListener('visibilitychange', syncAll);
 reduce.addEventListener('change', () => { mediaStates.forEach(state => { state.manual = null; }); syncAll(); requestFrame(); });
@@ -78,12 +75,13 @@ function chooseFeature(name) {
   selected = name; updateFeatureCopy();
   for (const tab of tabs) { const active = tab.dataset.feature === name; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1; }
   panel.setAttribute('aria-labelledby', `tab-${name}`);
-  featureMedia.pause(); featureMedia.removeAttribute('src');
-  featureMedia.poster = `assets/motion/${name}.jpg`;
-  featureMedia.dataset.src = `assets/motion/${name}.mp4`;
-  featureMedia.dataset.feature = name;
-  featureMedia.setAttribute('aria-label', featureCopy[name].description[0]);
-  featureMedia.load(); mediaStates.get(featureMedia).manual = null; syncVideo(featureMedia);
+  panel.querySelector('.expand-demo').href = `showcase/?embed=${name}&v=sharp-1`;
+  panel.querySelector('.expand-demo').setAttribute('aria-label', `Open full-size ${name} demonstration`);
+  featureMedia.dataset.demo = name;
+  featureMedia.src = `showcase/?embed=${name}&v=sharp-1`;
+  featureMedia.title = `${featureCopy[name].description[0]} — illustrative animated interface`;
+  mediaStates.get(featureMedia).manual = null;
+  syncVideo(featureMedia);
 }
 tabs.forEach((tab, index) => {
   tab.addEventListener('click', () => chooseFeature(tab.dataset.feature));
@@ -101,7 +99,7 @@ const filmVideo = film.querySelector('video');
 document.querySelector('[data-film-open]').addEventListener('click', event => {
   previousFocus = event.currentTarget;
   film.showModal(); syncAll();
-  if (!filmVideo.getAttribute('src')) filmVideo.src = 'assets/motion/film.mp4';
+  if (!filmVideo.getAttribute('src')) filmVideo.src = 'assets/motion/film-4k.mp4';
   filmVideo.play().catch(() => {}); // Native controls remain available if autoplay is blocked.
 });
 document.querySelector('.film-close').addEventListener('click', () => film.close());

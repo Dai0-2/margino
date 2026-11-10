@@ -1,11 +1,19 @@
 const DURATION_MS = 28_000;
 const QUESTION = 'Why is self-attention useful here?';
-const ANSWER = 'Self-attention gives each token a direct path to every other token, so long-range dependencies do not require sequential recurrence. It also lets the model process positions in parallel, which makes training more efficient. Multiple heads can learn different relationships at the same time while keeping the result tied to the source passage.';
+const ANSWER = 'Self-attention connects each token directly to the others, helping capture long-range relationships. Tokens can be processed in parallel rather than through recurrence. Multiple heads learn different relationships within the same passage.';
 const SCENE_TIMES = [1_100, 4_900, 8_600, 13_500, 16_900, 19_800, 22_800, 25_900];
 
 const params = new URLSearchParams(window.location.search);
 const autoplay = params.get('autoplay') === '1';
-const recording = params.get('recording') === '1';
+const EMBED_VIEWS = {
+  reader: { x:54, y:91, w:1812, h:935, start:3500, end:18800, still:13700 },
+  source: { x:484, y:150, w:1380, h:850, start:7100, end:15500, still:13700 },
+  annotation: { x:492, y:160, w:660, h:830, start:15800, end:18800, still:17700 },
+  memory: { x:1374, y:150, w:490, h:730, start:19100, end:21600, still:20700 },
+  library: { x:54, y:92, w:1812, h:934, start:23500, end:23500, still:23500 },
+};
+const embed = Object.hasOwn(EMBED_VIEWS, params.get('embed')) ? EMBED_VIEWS[params.get('embed')] : null;
+const recording = params.get('recording') === '1' || Boolean(embed);
 const requestedScene = Number(params.get('scene'));
 const hasScene = Number.isInteger(requestedScene) && requestedScene >= 1 && requestedScene <= 8;
 
@@ -37,8 +45,8 @@ const thumbnails = Array.from(document.querySelectorAll('[data-thumbnail]'));
 body.dataset.autoplay = String(autoplay);
 body.dataset.recording = String(recording);
 
-let currentMs = hasScene ? SCENE_TIMES[requestedScene - 1] : 0;
-let running = !hasScene || autoplay;
+let currentMs = embed ? embed.still : hasScene ? SCENE_TIMES[requestedScene - 1] : 0;
+let running = !embed && (!hasScene || autoplay);
 let done = false;
 let frameId = 0;
 let previousFrame = 0;
@@ -249,7 +257,7 @@ function tick(timestamp) {
   previousFrame = timestamp;
 
   if (running && !done) {
-    currentMs = Math.min(DURATION_MS, currentMs + delta);
+    currentMs = embed && currentMs + delta >= embed.end ? embed.start : Math.min(DURATION_MS, currentMs + delta);
     render(currentMs);
     if (currentMs >= DURATION_MS) {
       running = false;
@@ -259,7 +267,7 @@ function tick(timestamp) {
     }
   }
 
-  frameId = requestAnimationFrame(tick);
+  frameId = !embed || running ? requestAnimationFrame(tick) : 0;
 }
 
 function seek(milliseconds) {
@@ -276,14 +284,21 @@ function play() {
   done = false;
   window.__paperflowPromo.done = false;
   pauseButton.textContent = 'Pause';
+  if (embed && !frameId) frameId = requestAnimationFrame(tick);
 }
 
 function pause() {
   running = false;
   pauseButton.textContent = 'Play';
+  if (embed) { cancelAnimationFrame(frameId); frameId = 0; }
 }
 
 function resizeStage() {
+  if (embed) {
+    const scale = Math.min(innerWidth / embed.w, innerHeight / embed.h);
+    showcase.style.cssText = `top:0;left:0;clip-path:inset(${embed.y}px ${1920-embed.x-embed.w}px ${1080-embed.y-embed.h}px ${embed.x}px);transform-origin:0 0;transform:translate(${(innerWidth-embed.w*scale)/2-embed.x*scale}px,${(innerHeight-embed.h*scale)/2-embed.y*scale}px) scale(${scale})`;
+    return;
+  }
   const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
   setVar('--viewport-scale', scale.toFixed(6));
 }
@@ -327,6 +342,7 @@ async function initialize() {
   render(currentMs);
   window.__paperflowPromo.ready = true;
   window.dispatchEvent(new CustomEvent('paperflow:promo-ready'));
+  if (embed) parent.postMessage({type:'margino:demo-ready'}, location.origin);
   frameId = requestAnimationFrame(tick);
 }
 
@@ -343,4 +359,14 @@ if (params.get('capture') === '1') {
   input.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;z-index:9999';
   input.addEventListener('input', () => { pause(); seek(Number(input.value)); });
   document.body.append(input);
+}
+
+if (embed) {
+  body.dataset.embed = params.get('embed');
+  showcase.inert = true;
+  addEventListener('message', event => {
+    if (event.origin !== location.origin || event.source !== parent || event.data?.type !== 'margino:demo-playback') return;
+    if (event.data.playing === true && embed.start !== embed.end) play();
+    else pause();
+  });
 }
