@@ -332,3 +332,15 @@ async function initialize() {
 
 window.addEventListener('beforeunload', () => cancelAnimationFrame(frameId));
 void initialize();
+
+// A recording-only numeric control allows deterministic frame capture through
+// ordinary browser input, without relying on wall-clock playback timing.
+if (params.get('capture') === '1') {
+  running = false;
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.setAttribute('aria-label', 'Recording timestamp');
+  input.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;z-index:9999';
+  input.addEventListener('input', () => { pause(); seek(Number(input.value)); });
+  document.body.append(input);
+}
